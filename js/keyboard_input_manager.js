@@ -3,13 +3,13 @@ function KeyboardInputManager() {
 
   if (window.navigator.msPointerEnabled) {
     //Internet Explorer 10 style
-    this.eventTouchstart    = "MSPointerDown";
-    this.eventTouchmove     = "MSPointerMove";
-    this.eventTouchend      = "MSPointerUp";
+    this.eventTouchstart = "MSPointerDown";
+    this.eventTouchmove = "MSPointerMove";
+    this.eventTouchend = "MSPointerUp";
   } else {
-    this.eventTouchstart    = "touchstart";
-    this.eventTouchmove     = "touchmove";
-    this.eventTouchend      = "touchend";
+    this.eventTouchstart = "touchstart";
+    this.eventTouchmove = "touchmove";
+    this.eventTouchend = "touchend";
   }
 
   this.listen();
@@ -52,8 +52,8 @@ KeyboardInputManager.prototype.listen = function () {
   // Respond to direction keys
   document.addEventListener("keydown", function (event) {
     var modifiers = event.altKey || event.ctrlKey || event.metaKey ||
-                    event.shiftKey;
-    var mapped    = map[event.which];
+      event.shiftKey;
+    var mapped = map[event.which];
 
     if (!modifiers) {
       if (mapped !== undefined) {
@@ -66,12 +66,36 @@ KeyboardInputManager.prototype.listen = function () {
     if (!modifiers && event.which === 82) {
       self.restart.call(self, event);
     }
+
+    // U key for undo
+    if (!modifiers && event.which === 85) {
+      self.undo.call(self, event);
+    }
+
+    // S key for save
+    if (modifiers && event.which === 83 && event.ctrlKey) {
+      event.preventDefault();
+      self.save.call(self, event);
+    }
+
+    // L key for load
+    if (modifiers && event.which === 76 && event.ctrlKey) {
+      event.preventDefault();
+      self.load.call(self, event);
+    }
   });
 
   // Respond to button presses
   this.bindButtonPress(".retry-button", this.restart);
   this.bindButtonPress(".restart-button", this.restart);
   this.bindButtonPress(".keep-playing-button", this.keepPlaying);
+  this.bindButtonPress(".undo-button", this.undo);
+  this.bindButtonPress(".save-button", this.save);
+  this.bindButtonPress(".load-button", this.load);
+
+  // AI buttons
+  this.bindButtonPress(".ai-play-button", this.aiPlay);
+  this.bindButtonPress(".ai-step-button", this.aiStep);
 
   // Respond to swipe events
   var touchStartClientX, touchStartClientY;
@@ -79,7 +103,7 @@ KeyboardInputManager.prototype.listen = function () {
 
   gameContainer.addEventListener(this.eventTouchstart, function (event) {
     if ((!window.navigator.msPointerEnabled && event.touches.length > 1) ||
-        event.targetTouches.length > 1) {
+      event.targetTouches.length > 1) {
       return; // Ignore if touching with more than 1 finger
     }
 
@@ -100,7 +124,7 @@ KeyboardInputManager.prototype.listen = function () {
 
   gameContainer.addEventListener(this.eventTouchend, function (event) {
     if ((!window.navigator.msPointerEnabled && event.touches.length > 0) ||
-        event.targetTouches.length > 0) {
+      event.targetTouches.length > 0) {
       return; // Ignore if still touching with one or more fingers
     }
 
@@ -137,8 +161,40 @@ KeyboardInputManager.prototype.keepPlaying = function (event) {
   this.emit("keepPlaying");
 };
 
+// 撤销功能
+KeyboardInputManager.prototype.undo = function (event) {
+  event.preventDefault();
+  this.emit("undo");
+};
+
+// 存档功能
+KeyboardInputManager.prototype.save = function (event) {
+  event.preventDefault();
+  this.emit("save");
+};
+
+// 读档功能
+KeyboardInputManager.prototype.load = function (event) {
+  event.preventDefault();
+  this.emit("load");
+};
+
+// AI play button
+KeyboardInputManager.prototype.aiPlay = function (event) {
+  event.preventDefault();
+  this.emit("aiPlay");
+};
+
+// AI step button
+KeyboardInputManager.prototype.aiStep = function (event) {
+  event.preventDefault();
+  this.emit("aiStep");
+};
+
 KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {
   var button = document.querySelector(selector);
-  button.addEventListener("click", fn.bind(this));
-  button.addEventListener(this.eventTouchend, fn.bind(this));
+  if (button) {
+    button.addEventListener("click", fn.bind(this));
+    button.addEventListener(this.eventTouchend, fn.bind(this));
+  }
 };
