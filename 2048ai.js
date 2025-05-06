@@ -4,7 +4,7 @@
  */
 
 // 核心配置参数
-const SEARCH_DEPTH = 5;
+const SEARCH_DEPTH = 2;//原来是5
 const CPROB_THRESHOLD = 0.0001;
 const MAX_HISTORY = 10; // 最大历史记录数量
 
@@ -309,6 +309,7 @@ class AI2048 {
     this.transTable = new Map();
     this.movesEvaluated = 0;
     this.cacheHits = 0;
+    this.moveDetails = {}; // 添加存储移动详情的属性
   }
 
   /**
@@ -318,13 +319,14 @@ class AI2048 {
     this.movesEvaluated = 0;
     this.cacheHits = 0;
     this.transTable.clear();
+    this.moveDetails = {}; // 重置移动详情
   }
 
   /**
    * 为棋盘的一行或一列计算启发式评分
+   * 返回详细的评分组成
    */
-  scoreLineHeuristic(line) {
-    let score = 0;
+  scoreLineHeuristic(line, includeDetails = false) {
     let empty = 0;
     let merges = 0;
     let monotonicity_left = 0;
@@ -369,28 +371,91 @@ class AI2048 {
       }
     }
 
-    score = SCORE_LOST_PENALTY +
-      SCORE_EMPTY_WEIGHT * empty +
-      SCORE_MERGES_WEIGHT * merges -
-      SCORE_MONOTONICITY_WEIGHT * Math.min(monotonicity_left, monotonicity_right) -
-      SCORE_SUM_WEIGHT * sum;
+    const emptyScore = SCORE_EMPTY_WEIGHT * empty;
+    const mergesScore = SCORE_MERGES_WEIGHT * merges;
+    const monotonicityScore = -SCORE_MONOTONICITY_WEIGHT * Math.min(monotonicity_left, monotonicity_right);
+    const sumScore = -SCORE_SUM_WEIGHT * sum;
+
+    const score = SCORE_LOST_PENALTY + emptyScore + mergesScore + monotonicityScore + sumScore;
+
+    if (includeDetails) {
+      return {
+        score,
+        details: {
+          empty,
+          emptyScore,
+          merges,
+          mergesScore,
+          monotonicity: Math.min(monotonicity_left, monotonicity_right),
+          monotonicityScore,
+          sum,
+          sumScore
+        }
+      };
+    }
 
     return score;
   }
 
   /**
    * 计算棋盘的启发式评分
+   * 可选参数includeDetails用于返回详细信息
    */
-  evaluateBoard(board) {
+  evaluateBoard(board, includeDetails = false) {
     let score = 0;
+    let details = {
+      empty: 0,
+      emptyScore: 0,
+      merges: 0,
+      mergesScore: 0,
+      monotonicity: 0,
+      monotonicityScore: 0,
+      sum: 0,
+      sumScore: 0
+    };
 
     for (let row = 0; row < 4; row++) {
-      score += this.scoreLineHeuristic(board.grid[row]);
+      if (includeDetails) {
+        const rowResult = this.scoreLineHeuristic(board.grid[row], true);
+        score += rowResult.score;
+        details.empty += rowResult.details.empty;
+        details.emptyScore += rowResult.details.emptyScore;
+        details.merges += rowResult.details.merges;
+        details.mergesScore += rowResult.details.mergesScore;
+        details.monotonicity += rowResult.details.monotonicity;
+        details.monotonicityScore += rowResult.details.monotonicityScore;
+        details.sum += rowResult.details.sum;
+        details.sumScore += rowResult.details.sumScore;
+      } else {
+        score += this.scoreLineHeuristic(board.grid[row]);
+      }
     }
 
     for (let col = 0; col < 4; col++) {
       const column = [board.grid[0][col], board.grid[1][col], board.grid[2][col], board.grid[3][col]];
-      score += this.scoreLineHeuristic(column);
+      if (includeDetails) {
+        const colResult = this.scoreLineHeuristic(column, true);
+        score += colResult.score;
+        details.empty += colResult.details.empty;
+        details.emptyScore += colResult.details.emptyScore;
+        details.merges += colResult.details.merges;
+        details.mergesScore += colResult.details.mergesScore;
+        details.monotonicity += colResult.details.monotonicity;
+        details.monotonicityScore += colResult.details.monotonicityScore;
+        details.sum += colResult.details.sum;
+        details.sumScore += colResult.details.sumScore;
+      } else {
+        score += this.scoreLineHeuristic(column);
+      }
+    }
+
+    // 空格数修正：因为我们计算了行和列，所以每个空格被计算了两次
+    if (includeDetails) {
+      const actualEmpty = board.countEmpty();
+      details.empty = actualEmpty; // 修正为实际的空格数
+      details.emptyScore = SCORE_EMPTY_WEIGHT * actualEmpty * 2; // *2 因为行列都计算了一次
+
+      return { score, details };
     }
 
     return score;
@@ -410,23 +475,80 @@ class AI2048 {
 
     let bestScore = -1;
     let bestMove = -1;
+    const moveScores = [];
+    const directionNames = ['上', '下', '左', '右'];
 
+    // 记录当前棋盘状态以便显示
+    const currentBoard = board.clone();
+
+    // 评估每个方向的移动
     for (let move = 0; move < 4; move++) {
       const newBoard = board.clone();
       if (newBoard.move(move)) {
-        const score = this.scoreMove(newBoard, 1.0);
+        // 计算AI算法评分(深度搜索结果)
+        const algorithmScore = this.scoreMove(newBoard, 1.0);
 
-        if (score > bestScore) {
-          bestScore = score;
+        // 计算静态评估分数和详情(显示用)
+        const evalResult = this.evaluateBoard(newBoard, true);
+        const details = evalResult.details;
+
+        // 记录这个方向的详细信息
+        moveScores.push({
+          move,
+          direction: directionNames[move],
+          score: algorithmScore,       // AI决策使用的实际分数(来自深度搜索)
+          details,
+          boardAfterMove: newBoard.clone(),  // 保存移动后的棋盘状态
+          valid: true
+        });
+
+        if (algorithmScore > bestScore) {
+          bestScore = algorithmScore;
           bestMove = move;
         }
 
         this.movesEvaluated = 0;
         this.cacheHits = 0;
+      } else {
+        // 无效移动
+        moveScores.push({
+          move,
+          direction: directionNames[move],
+          score: -1,
+          valid: false
+        });
       }
     }
 
+    // 保存移动详情以便外部访问
+    this.moveDetails = {
+      bestMove,
+      bestDirection: directionNames[bestMove],
+      moveScores,
+      currentBoard: currentBoard,  // 添加当前棋盘状态
+      factorExplanations: {
+        empty: "空格数量 - 空格越多越好，给予游戏更多可能性",
+        merges: "可合并方块 - 可合并的方块数量越多越好",
+        monotonicity: "单调性 - 数值沿某个方向单调递增/递减程度",
+        sum: "方块总和 - 大数值方块聚集在边角更好"
+      },
+      weightExplanations: {
+        emptyWeight: `空格权重 (${SCORE_EMPTY_WEIGHT}) - 空格对游戏的影响程度`,
+        mergesWeight: `合并权重 (${SCORE_MERGES_WEIGHT}) - 合并对游戏的影响程度`,
+        monotonicityWeight: `单调性权重 (${SCORE_MONOTONICITY_WEIGHT}) - 单调性对游戏的影响程度`,
+        sumWeight: `总和权重 (${SCORE_SUM_WEIGHT}) - 数值总和对游戏的影响程度`
+      },
+      scoreExplanation: "括号中的数字表示该因素对总分的具体贡献值。例如，空格(270)表示空格因素为总分贡献了270分。负号表示减分项，如总和(-293)表示方块总和因素减少了293分。"
+    };
+
     return bestMove;
+  }
+
+  /**
+   * 获取最后一次决策的详细信息
+   */
+  getLastMoveDetails() {
+    return this.moveDetails;
   }
 
   /**

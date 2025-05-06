@@ -1,0 +1,102 @@
+/* 游戏布局容器 */
+.game-layout-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+    align-items: stretch;
+}
+
+/* 历史棋盘容器 */
+.previous-board-container {
+    min-width: 210px;
+    width: auto;
+    max-width: 300px;
+    flex-shrink: 0;
+    flex-grow: 1;
+    background: rgba(238, 228, 218, 0.35);
+    padding: 15px;
+    border-radius: 6px;
+    color: #776e65;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    animation: ai-panel-fade-in 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+.previous-board-container h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    text-align: center;
+}
+
+/* 实时评分容器样式 */
+.realtime-score-container {
+    min-width: 210px;
+    width: auto;
+    max-width: 350px;
+    flex-shrink: 0;
+    flex-grow: 1;
+    margin: 0;
+    background: rgba(238, 228, 218, 0.35);
+    padding: 15px;
+    border-radius: 6px;
+    color: #776e65;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    animation: ai-panel-fade-in 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+/* 实时评分表格样式 */
+.realtime-score-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 12px;
+    table-layout: auto;
+}
+
+.realtime-score-table th,
+.realtime-score-table td {
+    border: 1px solid #bbada0;
+    padding: 4px;
+    text-align: center;
+    word-wrap: break-word;
+    max-width: 80px;
+    overflow: hidden;
+}
+
+.realtime-score-table th {
+    background-color: #bbada0;
+    color: white;
+}
+
+/* 移动设备响应式布局 */
+@media screen and (max-width: 1050px) {
+    .game-layout-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .previous-board-container,
+    .realtime-score-container {
+        width: 90%;
+        max-width: 500px;
+        margin: 10px auto;
+    }
+}
+
+@media screen and (max-width: 520px) {
+
+    .previous-board-container,
+    .realtime-score-container {
+        width: 280px;
+        padding: 10px;
+    }
+}

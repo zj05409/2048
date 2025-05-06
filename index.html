@@ -15,6 +15,9 @@
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+  
+  <!-- 自定义样式，覆盖默认样式 -->
+  <link href="style/custom.css" rel="stylesheet" type="text/css">
 </head>
 <body>
   <div class="container">
@@ -41,44 +44,49 @@
       </div>
     </div>
 
-    <div class="game-container">
-      <div class="game-message">
-        <p></p>
-        <div class="lower">
-          <a class="keep-playing-button"><span data-i18n="keep_going">继续游戏</span></a>
-          <a class="retry-button"><span data-i18n="try_again">再试一次</span></a>
+    <div class="game-layout-container">
+      <div id="previous-board-container" class="previous-board-container"></div>
+      <div id="realtime-score-container" class="realtime-score-container"></div>
+      
+      <div class="game-container">
+        <div class="game-message">
+          <p></p>
+          <div class="lower">
+            <a class="keep-playing-button"><span data-i18n="keep_going">继续游戏</span></a>
+            <a class="retry-button"><span data-i18n="try_again">再试一次</span></a>
+          </div>
         </div>
-      </div>
 
-      <div class="grid-container">
-        <div class="grid-row">
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
+        <div class="grid-container">
+          <div class="grid-row">
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+          </div>
+          <div class="grid-row">
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+          </div>
+          <div class="grid-row">
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+          </div>
+          <div class="grid-row">
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+          </div>
         </div>
-        <div class="grid-row">
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-        </div>
-        <div class="grid-row">
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-        </div>
-        <div class="grid-row">
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-        </div>
-      </div>
 
-      <div class="tile-container">
+        <div class="tile-container">
 
+        </div>
       </div>
     </div>
 
@@ -86,6 +94,8 @@
       <div class="btn-group">
         <a class="ai-play-button"><span data-i18n="ai_play">AI自动</span></a>
         <a class="ai-step-button"><span data-i18n="ai_step">AI单步</span></a>
+        <a class="ai-simulate-button"><span data-i18n="ai_simulate">AI模拟决策</span></a>
+        <a class="show-score-button"><span data-i18n="show_score">显示评分</span></a>
       </div>
     </div>
 

@@ -11,6 +11,9 @@
             "load": "Load",
             "ai_play": "AI Auto",
             "ai_step": "AI Step",
+            "ai_simulate": "AI Simulate",
+            "show_score": "Show Score",
+            "hide_score": "Hide Score",
             "keep_going": "Continue",
             "try_again": "Retry",
             "how_to_play": "How to play:",
@@ -34,6 +37,9 @@
             "load": "读档",
             "ai_play": "AI自动",
             "ai_step": "AI单步",
+            "ai_simulate": "AI模拟决策",
+            "show_score": "显示评分",
+            "hide_score": "隐藏评分",
             "keep_going": "继续",
             "try_again": "重试",
             "how_to_play": "玩法说明:",
@@ -89,6 +95,15 @@
         var elements = document.querySelectorAll("[data-i18n]");
         for (var i = 0; i < elements.length; i++) {
             var key = elements[i].getAttribute("data-i18n");
+            // 检查是否是显示/隐藏评分按钮
+            if (key === "show_score") {
+                var state = elements[i].getAttribute("data-i18n-state");
+                if (state === "hide") {
+                    elements[i].textContent = translations[lang]["hide_score"];
+                    continue;
+                }
+            }
+
             if (translations[lang][key]) {
                 elements[i].textContent = translations[lang][key];
             }
@@ -96,8 +111,19 @@
 
         // 更新AI自动玩按钮文本（运行中的特殊处理）
         var aiButton = document.querySelector(".ai-play-button span");
-        if (aiButton && (aiButton.textContent === "停止AI" || aiButton.textContent === "停止")) {
+        if (aiButton && (aiButton.textContent === "停止AI" || aiButton.textContent === "停止" || aiButton.textContent === "Stop")) {
             aiButton.textContent = lang === "zh" ? "停止" : "Stop";
+        }
+
+        // 检查评分面板按钮的状态
+        var scoreButton = document.querySelector(".show-score-button span");
+        if (scoreButton) {
+            var state = scoreButton.getAttribute("data-i18n-state");
+            if (state === "hide") {
+                scoreButton.textContent = lang === "zh" ? "隐藏评分" : "Hide Score";
+            } else {
+                scoreButton.textContent = lang === "zh" ? "显示评分" : "Show Score";
+            }
         }
     }
 
@@ -115,6 +141,7 @@
     // 游戏管理器的语言特定方法
     function setupGameManagerLang() {
         if (window.GameManager) {
+            // 保存原始方法的引用
             var originalAiPlay = GameManager.prototype.aiPlay;
 
             // 重写AI播放方法，使按钮文本国际化

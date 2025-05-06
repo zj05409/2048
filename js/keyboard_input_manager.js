@@ -72,6 +72,12 @@ KeyboardInputManager.prototype.listen = function () {
       self.undo.call(self, event);
     }
 
+    // Ctrl+Z for undo
+    if ((event.ctrlKey || event.metaKey) && event.which === 90) {
+      event.preventDefault();
+      self.undo.call(self, event);
+    }
+
     // S key for save
     if (modifiers && event.which === 83 && event.ctrlKey) {
       event.preventDefault();
@@ -96,6 +102,8 @@ KeyboardInputManager.prototype.listen = function () {
   // AI buttons
   this.bindButtonPress(".ai-play-button", this.aiPlay);
   this.bindButtonPress(".ai-step-button", this.aiStep);
+  this.bindButtonPress(".ai-simulate-button", this.aiSimulate);
+  this.bindButtonPress(".show-score-button", this.showScorePanel);
 
   // Respond to swipe events
   var touchStartClientX, touchStartClientY;
@@ -149,6 +157,27 @@ KeyboardInputManager.prototype.listen = function () {
       self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
     }
   });
+
+  // 监听AI事件
+  this.on("aiPlay", function () {
+    // 只处理游戏管理器的AI播放逻辑，不再触发aiPlay事件
+    this.emit("aiPlayExecute");
+  }.bind(this));
+
+  this.on("aiStep", function () {
+    // 只处理游戏管理器的AI单步逻辑，不再触发aiStep事件
+    this.emit("aiStepExecute");
+  }.bind(this));
+
+  this.on("aiSimulate", function () {
+    // 只处理游戏管理器的AI模拟决策逻辑，不再触发aiSimulate事件
+    this.emit("aiSimulateExecute");
+  }.bind(this));
+
+  this.on("showScore", function () {
+    // 只处理显示评分面板逻辑，不再触发showScore事件
+    this.emit("showScoreExecute");
+  }.bind(this));
 };
 
 KeyboardInputManager.prototype.restart = function (event) {
@@ -181,14 +210,26 @@ KeyboardInputManager.prototype.load = function (event) {
 
 // AI play button
 KeyboardInputManager.prototype.aiPlay = function (event) {
-  event.preventDefault();
+  if (event) {
+    event.preventDefault();
+  }
   this.emit("aiPlay");
 };
 
 // AI step button
 KeyboardInputManager.prototype.aiStep = function (event) {
-  event.preventDefault();
+  if (event) {
+    event.preventDefault();
+  }
   this.emit("aiStep");
+};
+
+// AI simulate button
+KeyboardInputManager.prototype.aiSimulate = function (event) {
+  if (event) {
+    event.preventDefault();
+  }
+  this.emit("aiSimulate");
 };
 
 KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {
@@ -197,4 +238,12 @@ KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {
     button.addEventListener("click", fn.bind(this));
     button.addEventListener(this.eventTouchend, fn.bind(this));
   }
+};
+
+// Show score panel button
+KeyboardInputManager.prototype.showScorePanel = function (event) {
+  if (event) {
+    event.preventDefault();
+  }
+  this.emit("showScore");
 };
