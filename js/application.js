@@ -32,11 +32,11 @@ window.requestAnimationFrame(function () {
     }, { passive: false });
 
     // 为iOS设备设置固定的body
-    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.height = '100%';
-      document.body.style.overflow = 'hidden';
-    }
+    // if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    //   document.body.style.position = 'fixed';
+    //   document.body.style.width = '100%';
+    //   document.body.style.height = '100%';
+    //   document.body.style.overflow = 'hidden';
+    // }
   }
 });
