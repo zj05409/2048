@@ -440,6 +440,7 @@ hr {
   -webkit-transition-property: -webkit-transform;
   -moz-transition-property: -moz-transform;
   transition-property: transform;
+  box-sizing: border-box;
 }
 
 .tile .tile-inner {
@@ -449,6 +450,7 @@ hr {
   font-weight: bold;
   z-index: 10;
   font-size: 55px;
+  box-sizing: border-box;
 }
 
 .tile.tile-2 .tile-inner {
