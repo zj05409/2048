@@ -287,5 +287,41 @@
   <script src="js/game_manager.js"></script>
   <script src="js/application.js"></script>
   <script src="2048ai.js"></script>
+  
+  <!-- 阻止移动端页面滚动的脚本 -->
+  <script>
+    // 等待DOM加载完成
+    document.addEventListener('DOMContentLoaded', function() {
+      // 获取游戏容器
+      var gameContainer = document.querySelector('.game-container');
+      
+      if (gameContainer) {
+        // 阻止游戏容器内的触摸事件引起页面滚动
+        gameContainer.addEventListener('touchstart', function(e) {
+          e.stopPropagation();
+        }, {passive: false});
+        
+        gameContainer.addEventListener('touchmove', function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+        }, {passive: false});
+        
+        gameContainer.addEventListener('touchend', function(e) {
+          e.stopPropagation();
+        }, {passive: false});
+      }
+      
+      // 针对iOS设备
+      if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        // 防止iOS橡皮筋效果
+        document.addEventListener('touchmove', function(e) {
+          // 检查是否在游戏容器内的触摸事件
+          if (e.target.closest('.game-container')) {
+            e.preventDefault();
+          }
+        }, {passive: false});
+      }
+    });
+  </script>
 </body>
 </html>

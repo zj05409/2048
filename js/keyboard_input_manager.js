@@ -123,12 +123,16 @@ KeyboardInputManager.prototype.listen = function () {
       touchStartClientY = event.touches[0].clientY;
     }
 
+    // 阻止默认行为，防止页面滚动
     event.preventDefault();
-  });
+    event.stopPropagation();
+  }, { passive: false });
 
   gameContainer.addEventListener(this.eventTouchmove, function (event) {
+    // 阻止默认行为，防止页面滚动
     event.preventDefault();
-  });
+    event.stopPropagation();
+  }, { passive: false });
 
   gameContainer.addEventListener(this.eventTouchend, function (event) {
     if ((!window.navigator.msPointerEnabled && event.touches.length > 0) ||
@@ -156,7 +160,11 @@ KeyboardInputManager.prototype.listen = function () {
       // (right : left) : (down : up)
       self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
     }
-  });
+
+    // 阻止默认行为，防止页面滚动
+    event.preventDefault();
+    event.stopPropagation();
+  }, { passive: false });
 
   // 监听AI事件
   this.on("aiPlay", function () {

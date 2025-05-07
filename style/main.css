@@ -191,6 +191,7 @@ hr {
   gap: 20px;
   margin: 20px 0;
   align-items: stretch;
+  touch-action: none;
 }
 
 /* 调整游戏容器样式以适应新布局 */
@@ -213,6 +214,7 @@ hr {
   background: #bbada0;
   border-radius: 6px;
   box-sizing: border-box;
+  overscroll-behavior: none;
 }
 
 .game-container .game-message {
