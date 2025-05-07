@@ -4,7 +4,7 @@
  */
 
 // 核心配置参数
-const SEARCH_DEPTH = 2;//原来是5
+const SEARCH_DEPTH = 5;//原来是5
 const CPROB_THRESHOLD = 0.0001;
 const MAX_HISTORY = 10; // 最大历史记录数量
 
