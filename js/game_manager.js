@@ -91,6 +91,11 @@ GameManager.prototype.undo = function () {
   this.won = previousState.won;
   this.keepPlaying = previousState.keepPlaying;
 
+  // 如果游戏状态不是结束状态，需要清除游戏结束消息
+  if (!this.over) {
+    this.actuator.continueGame();
+  }
+
   // 更新界面
   this.actuate();
 

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>2048 Mobile Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #faf8ef;
+    }
+    
+    h1 {
+      text-align: center;
+      color: #776e65;
+    }
+    
+    .test-container {
+      max-width: 400px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    
+    .test-section {
+      border: 1px solid #bbada0;
+      border-radius: 6px;
+      padding: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .section-title {
+      margin-top: 0;
+      color: #776e65;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    /* 正常尺寸方块 */
+    .normal-tile {
+      position: relative;
+      width: 107px;
+      height: 107px;
+      margin: 10px;
+      display: inline-block;
+    }
+    
+    .normal-inner {
+      width: 107px;
+      height: 107px;
+      border-radius: 3px;
+      background: #eee4da;
+      text-align: center;
+      font-weight: bold;
+      font-size: 55px;
+      line-height: 107px;
+      box-sizing: border-box;
+    }
+    
+    /* 移动尺寸方块 */
+    .mobile-tile {
+      position: relative;
+      width: 55px;
+      height: 55px;
+      margin: 10px;
+      display: inline-block;
+    }
+    
+    .mobile-inner {
+      width: 55px;
+      height: 55px;
+      border-radius: 3px;
+      background: #eee4da;
+      text-align: center;
+      font-weight: bold;
+      font-size: 22px;
+      line-height: 55px;
+      box-sizing: border-box;
+    }
+    
+    /* 超小尺寸方块 */
+    .tiny-tile {
+      position: relative;
+      width: 53px;
+      height: 53px;
+      margin: 10px;
+      display: inline-block;
+    }
+    
+    .tiny-inner {
+      width: 53px;
+      height: 53px;
+      border-radius: 3px;
+      background: #eee4da;
+      text-align: center;
+      font-weight: bold;
+      font-size: 22px;
+      line-height: 53px;
+      box-sizing: border-box;
+    }
+    
+    /* 数字样式 */
+    .tile-2 {
+      background: #eee4da;
+    }
+    
+    .tile-4 {
+      background: #ede0c8;
+    }
+    
+    .tile-8 {
+      background: #f2b179;
+      color: #f9f6f2;
+    }
+    
+    .tile-16 {
+      background: #f59563;
+      color: #f9f6f2;
+    }
+    
+    .tile-32 {
+      background: #f67c5f;
+      color: #f9f6f2;
+    }
+    
+    .tile-64 {
+      background: #f65e3b;
+      color: #f9f6f2;
+    }
+    
+    .tile-128 {
+      background: #edcf72;
+      color: #f9f6f2;
+      font-size: 45px;
+    }
+    
+    .mobile-inner.tile-128,
+    .tiny-inner.tile-128 {
+      font-size: 18px;
+    }
+    
+    .tile-256 {
+      background: #edcc61;
+      color: #f9f6f2;
+      font-size: 45px;
+    }
+    
+    .mobile-inner.tile-256,
+    .tiny-inner.tile-256 {
+      font-size: 18px;
+    }
+    
+    .tile-512 {
+      background: #edc850;
+      color: #f9f6f2;
+      font-size: 45px;
+    }
+    
+    .mobile-inner.tile-512,
+    .tiny-inner.tile-512 {
+      font-size: 18px;
+    }
+    
+    .tile-1024 {
+      background: #edc53f;
+      color: #f9f6f2;
+      font-size: 35px;
+    }
+    
+    .mobile-inner.tile-1024,
+    .tiny-inner.tile-1024 {
+      font-size: 16px;
+    }
+    
+    .tile-2048 {
+      background: #edc22e;
+      color: #f9f6f2;
+      font-size: 35px;
+    }
+    
+    .mobile-inner.tile-2048,
+    .tiny-inner.tile-2048 {
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>2048 移动端显示测试</h1>
+  
+  <div class="test-container">
+    <div class="test-section">
+      <h2 class="section-title">正常尺寸方块 (107px)</h2>
+      <div class="normal-tile">
+        <div class="normal-inner tile-2">2</div>
+      </div>
+      <div class="normal-tile">
+        <div class="normal-inner tile-4">4</div>
+      </div>
+      <div class="normal-tile">
+        <div class="normal-inner tile-128">128</div>
+      </div>
+      <div class="normal-tile">
+        <div class="normal-inner tile-2048">2048</div>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2 class="section-title">移动尺寸方块 (55px)</h2>
+      <div class="mobile-tile">
+        <div class="mobile-inner tile-2">2</div>
+      </div>
+      <div class="mobile-tile">
+        <div class="mobile-inner tile-4">4</div>
+      </div>
+      <div class="mobile-tile">
+        <div class="mobile-inner tile-128">128</div>
+      </div>
+      <div class="mobile-tile">
+        <div class="mobile-inner tile-2048">2048</div>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2 class="section-title">超小尺寸方块 (53px)</h2>
+      <div class="tiny-tile">
+        <div class="tiny-inner tile-2">2</div>
+      </div>
+      <div class="tiny-tile">
+        <div class="tiny-inner tile-4">4</div>
+      </div>
+      <div class="tiny-tile">
+        <div class="tiny-inner tile-128">128</div>
+      </div>
+      <div class="tiny-tile">
+        <div class="tiny-inner tile-2048">2048</div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="text-align: center; margin-top: 20px;">
+    <p>请在不同宽度的屏幕上查看，确认方块显示正常。</p>
+    <p><a href="index.html" style="color: #776e65;">返回游戏</a></p>
+  </div>
+</body>
+</html> 
