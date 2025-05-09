@@ -17,7 +17,16 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
 
   // 添加历史记录，用于撤销功能
   this.history = [];
-  this.maxHistory = 10; // 最多保存10步
+  // 不再限制历史记录数量，支持无限撤销
+
+  // 添加录像相关属性
+  this.recordingMode = true; // 默认开启录像功能
+  this.initialState = null; // 游戏初始状态
+  this.moveHistory = []; // 移动历史记录
+  this.replayMode = false; // 是否处于回放模式
+  this.replayIndex = 0; // 当前回放到的步骤索引
+  this.replayTimerId = null; // 回放定时器ID
+  this.replaySpeed = 2; // 默认回放速度（每秒几步）
 
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
@@ -34,11 +43,24 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager.on("aiSimulateExecute", this.aiSimulate.bind(this));
   this.inputManager.on("showScoreExecute", this.toggleScorePanel.bind(this));
 
+  // 监听录像相关事件
+  this.inputManager.on("exportReplay", this.exportReplay.bind(this));
+  this.inputManager.on("importReplay", this.importReplay.bind(this));
+
   this.setup();
 }
 
 // Restart the game
 GameManager.prototype.restart = function () {
+  // 自动保存当前游戏（仅当游戏已经开始且有移动记录时）
+  if (this.moveHistory && this.moveHistory.length > 0) {
+    // var maxTile = this.getMaxTile();
+    // var date = new Date();
+    // var formattedDate = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+    var saveName = "自动保存";// + formattedDate;
+    this.saveCurrentGame(saveName);
+  }
+
   this.storageManager.clearGameState();
   this.actuator.continueGame(); // Clear the game won/lost message
   this.history = []; // 清空历史记录
@@ -68,11 +90,6 @@ GameManager.prototype.saveToHistory = function () {
   var historyCopy = JSON.parse(JSON.stringify(gameState));
 
   this.history.push(historyCopy);
-
-  // 限制历史记录长度
-  if (this.history.length > this.maxHistory) {
-    this.history.shift();
-  }
 };
 
 // 撤销到上一步
@@ -124,6 +141,13 @@ GameManager.prototype.setup = function () {
 
     // Add the initial tiles
     this.addStartTiles();
+  }
+
+  // 如果不是回放模式，重置录像相关状态
+  if (!this.replayMode) {
+    this.moveHistory = [];
+    // 保存游戏初始状态的深拷贝
+    this.initialState = JSON.parse(JSON.stringify(this.serialize()));
   }
 
   // Update the actuator
@@ -234,8 +258,16 @@ GameManager.prototype.move = function (direction) {
 
   if (this.isGameTerminated()) return; // Don't do anything if the game's over
 
+  // 如果是回放模式，忽略用户输入的移动
+  if (this.replayMode) return;
+
   // 在移动前保存当前状态到历史记录
   this.saveToHistory();
+
+  // 在录像模式时，记录移动方向
+  if (this.recordingMode) {
+    this.moveHistory.push(direction);
+  }
 
   var cell, tile;
 
@@ -1527,4 +1559,470 @@ GameManager.prototype.toggleScorePanel = function () {
       }
     }
   }
+};
+
+// 导出录像数据
+GameManager.prototype.exportReplay = function () {
+  if (!this.initialState || this.moveHistory.length === 0) {
+    alert(window.I18n && window.I18n.getCurrentLanguage() === "en" ?
+      "No replay data available!" :
+      "没有可用的录像数据！");
+    return;
+  }
+
+  // 创建录像数据对象
+  var replayData = {
+    version: "1.0",
+    timestamp: new Date().getTime(),
+    initialState: this.initialState,
+    moves: this.moveHistory,
+    score: this.score,
+    maxTile: this.getMaxTile()
+  };
+
+  // 将数据转换为JSON字符串
+  var jsonData = JSON.stringify(replayData);
+
+  // 创建Blob
+  var blob = new Blob([jsonData], { type: "application/json" });
+
+  // 创建下载链接
+  var a = document.createElement("a");
+  a.download = "2048_replay_" + new Date().toISOString().replace(/:/g, "-") + ".json";
+  a.href = URL.createObjectURL(blob);
+  a.style.display = "none";
+
+  // 添加到DOM并触发点击
+  document.body.appendChild(a);
+  a.click();
+
+  // 清理
+  setTimeout(function () {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(a.href);
+  }, 100);
+};
+
+// 获取棋盘上的最大方块值
+GameManager.prototype.getMaxTile = function () {
+  var max = 0;
+
+  this.grid.eachCell(function (x, y, tile) {
+    if (tile && tile.value > max) {
+      max = tile.value;
+    }
+  });
+
+  return max;
+};
+
+// 导入录像数据
+GameManager.prototype.importReplay = function (file) {
+  var self = this;
+
+  if (!file) {
+    // 创建文件输入元素
+    var fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = ".json,application/json";
+    fileInput.style.display = "none";
+
+    // 监听文件选择事件
+    fileInput.addEventListener("change", function (e) {
+      if (e.target.files.length > 0) {
+        self.importReplay(e.target.files[0]);
+      }
+      // 从DOM移除输入元素
+      document.body.removeChild(fileInput);
+    });
+
+    // 添加到DOM并触发点击
+    document.body.appendChild(fileInput);
+    fileInput.click();
+    return;
+  }
+
+  // 读取文件内容
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      var replayData = JSON.parse(e.target.result);
+
+      // 验证数据
+      if (!replayData.initialState || !Array.isArray(replayData.moves) || replayData.moves.length === 0) {
+        throw new Error("Invalid replay data");
+      }
+
+      // 开始回放
+      self.startReplay(replayData);
+    } catch (err) {
+      alert(window.I18n && window.I18n.getCurrentLanguage() === "en" ?
+        "Invalid replay file!" :
+        "无效的录像文件！");
+      console.error("Error importing replay:", err);
+    }
+  };
+
+  reader.readAsText(file);
+};
+
+// 开始回放录像
+GameManager.prototype.startReplay = function (replayData) {
+  // 设置为回放模式
+  this.replayMode = true;
+  this.replayIndex = 0;
+
+  // 显示回放控制界面
+  this.showReplayControls();
+
+  // 从初始状态开始重新加载游戏
+  this.grid = new Grid(replayData.initialState.grid.size,
+    replayData.initialState.grid.cells);
+  this.score = replayData.initialState.score;
+  this.over = replayData.initialState.over;
+  this.won = replayData.initialState.won;
+  this.keepPlaying = replayData.initialState.keepPlaying;
+
+  // 保存录像数据
+  this.initialState = replayData.initialState;
+  this.moveHistory = replayData.moves;
+
+  // 更新界面
+  this.actuate();
+
+  // 显示录像信息
+  this.showReplayInfo(replayData);
+};
+
+// 显示回放信息
+GameManager.prototype.showReplayInfo = function (replayData) {
+  var currentLang = window.I18n ? window.I18n.getCurrentLanguage() : "zh";
+  var container = document.querySelector(".replay-info");
+
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "replay-info";
+    var gameContainer = document.querySelector(".game-container");
+    gameContainer.parentNode.insertBefore(container, gameContainer);
+  }
+
+  var date = new Date(replayData.timestamp);
+  var dateStr = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+
+  container.innerHTML = "<div class='replay-header'>" +
+    (currentLang === "en" ? "Replay Mode" : "录像回放模式") +
+    "</div><div class='replay-details'>" +
+    (currentLang === "en" ? "Date: " : "日期：") + dateStr + "<br>" +
+    (currentLang === "en" ? "Moves: " : "总步数：") + replayData.moves.length + "<br>" +
+    (currentLang === "en" ? "Final Score: " : "最终得分：") + replayData.score + "<br>" +
+    (currentLang === "en" ? "Max Tile: " : "最大方块：") + replayData.maxTile +
+    "</div>";
+};
+
+// 显示回放控制界面
+GameManager.prototype.showReplayControls = function () {
+  var self = this;
+  var currentLang = window.I18n ? window.I18n.getCurrentLanguage() : "zh";
+
+  // 创建或获取回放控制容器
+  var container = document.querySelector(".replay-controls");
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "replay-controls";
+
+    var gameContainer = document.querySelector(".game-container");
+    if (gameContainer) {
+      gameContainer.parentNode.insertBefore(container, gameContainer.nextSibling);
+    } else {
+      document.body.appendChild(container);
+    }
+  }
+
+  // 清空容器
+  container.innerHTML = "";
+
+  // 创建控制按钮
+  var controls = [
+    {
+      id: "replay-prev",
+      text: currentLang === "en" ? "Previous" : "上一步",
+      handler: function () { self.replayPrevMove(); }
+    },
+    {
+      id: "replay-playpause",
+      text: currentLang === "en" ? "Play" : "播放",
+      handler: function () { self.toggleReplayPlayback(); }
+    },
+    {
+      id: "replay-next",
+      text: currentLang === "en" ? "Next" : "下一步",
+      handler: function () { self.replayNextMove(); }
+    },
+    {
+      id: "replay-speed",
+      text: currentLang === "en" ? "Speed: " + self.replaySpeed + "x" : "速度: " + self.replaySpeed + "x",
+      handler: function () { self.cycleReplaySpeed(); }
+    },
+    {
+      id: "replay-exit",
+      text: currentLang === "en" ? "Exit Replay" : "退出回放",
+      handler: function () { self.exitReplay(); }
+    }
+  ];
+
+  controls.forEach(function (control) {
+    var button = document.createElement("button");
+    button.id = control.id;
+    button.className = "replay-button";
+    button.textContent = control.text;
+    button.addEventListener("click", control.handler);
+    container.appendChild(button);
+  });
+
+  // 添加进度条
+  var progressContainer = document.createElement("div");
+  progressContainer.className = "replay-progress-container";
+
+  var progressLabel = document.createElement("div");
+  progressLabel.className = "replay-progress-label";
+  progressLabel.textContent = "0 / " + this.moveHistory.length;
+
+  var progressBar = document.createElement("div");
+  progressBar.className = "replay-progress-bar";
+
+  var progressFill = document.createElement("div");
+  progressFill.className = "replay-progress-fill";
+  progressFill.style.width = "0%";
+
+  progressBar.appendChild(progressFill);
+  progressContainer.appendChild(progressLabel);
+  progressContainer.appendChild(progressBar);
+  container.appendChild(progressContainer);
+};
+
+// 更新回放进度
+GameManager.prototype.updateReplayProgress = function () {
+  var progressLabel = document.querySelector(".replay-progress-label");
+  var progressFill = document.querySelector(".replay-progress-fill");
+
+  if (progressLabel && progressFill && this.moveHistory.length > 0) {
+    progressLabel.textContent = this.replayIndex + " / " + this.moveHistory.length;
+    var percentage = (this.replayIndex / this.moveHistory.length) * 100;
+    progressFill.style.width = percentage + "%";
+  }
+};
+
+// 播放/暂停回放
+GameManager.prototype.toggleReplayPlayback = function () {
+  var button = document.getElementById("replay-playpause");
+  var currentLang = window.I18n ? window.I18n.getCurrentLanguage() : "zh";
+
+  if (this.replayTimerId) {
+    // 暂停回放
+    clearInterval(this.replayTimerId);
+    this.replayTimerId = null;
+    if (button) {
+      button.textContent = currentLang === "en" ? "Play" : "播放";
+    }
+  } else {
+    // 开始回放
+    var self = this;
+    var interval = 1000 / this.replaySpeed; // 根据速度计算间隔时间
+
+    this.replayTimerId = setInterval(function () {
+      if (self.replayIndex >= self.moveHistory.length) {
+        // 已到达录像末尾，停止回放
+        self.toggleReplayPlayback();
+        return;
+      }
+      self.replayNextMove();
+    }, interval);
+
+    if (button) {
+      button.textContent = currentLang === "en" ? "Pause" : "暂停";
+    }
+  }
+};
+
+// 播放下一步
+GameManager.prototype.replayNextMove = function () {
+  if (this.replayIndex >= this.moveHistory.length) {
+    return; // 已到达录像末尾
+  }
+
+  // 获取下一步的移动方向
+  var direction = this.moveHistory[this.replayIndex++];
+
+  // 执行移动
+  this.replayMove(direction);
+
+  // 更新进度
+  this.updateReplayProgress();
+};
+
+// 返回上一步
+GameManager.prototype.replayPrevMove = function () {
+  if (this.replayIndex <= 0) {
+    return; // 已在录像开头
+  }
+
+  // 回到录像开头
+  if (this.replayIndex === 1) {
+    this.replayIndex = 0;
+    // 重置到初始状态
+    this.grid = new Grid(this.initialState.grid.size,
+      this.initialState.grid.cells);
+    this.score = this.initialState.score;
+    this.over = this.initialState.over;
+    this.won = this.initialState.won;
+    this.keepPlaying = this.initialState.keepPlaying;
+
+    // 更新界面
+    this.actuate();
+  } else {
+    // 需要从头开始重放到上一步
+    this.replayIndex -= 1;
+
+    // 重置到初始状态
+    this.grid = new Grid(this.initialState.grid.size,
+      this.initialState.grid.cells);
+    this.score = this.initialState.score;
+    this.over = this.initialState.over;
+    this.won = this.initialState.won;
+    this.keepPlaying = this.initialState.keepPlaying;
+
+    // 从头播放到上一步
+    for (var i = 0; i < this.replayIndex; i++) {
+      this.replayMove(this.moveHistory[i], false);
+    }
+
+    // 更新界面
+    this.actuate();
+  }
+
+  // 更新进度
+  this.updateReplayProgress();
+};
+
+// 执行录像中的移动
+GameManager.prototype.replayMove = function (direction, updateUI) {
+  updateUI = updateUI !== false; // 默认为true
+
+  var vector = this.getVector(direction);
+  var traversals = this.buildTraversals(vector);
+  var moved = false;
+  var self = this;
+
+  // 保存原始位置并移除合并信息
+  this.prepareTiles();
+
+  // 按指定方向移动方块
+  traversals.x.forEach(function (x) {
+    traversals.y.forEach(function (y) {
+      var cell = { x: x, y: y };
+      var tile = self.grid.cellContent(cell);
+
+      if (tile) {
+        var positions = self.findFarthestPosition(cell, vector);
+        var next = self.grid.cellContent(positions.next);
+
+        // 检查是否可以合并
+        if (next && next.value === tile.value && !next.mergedFrom) {
+          var merged = new Tile(positions.next, tile.value * 2);
+          merged.mergedFrom = [tile, next];
+
+          self.grid.insertTile(merged);
+          self.grid.removeTile(tile);
+
+          // 更新位置
+          tile.updatePosition(positions.next);
+
+          // 更新分数
+          self.score += merged.value;
+
+          // 检查是否达到2048
+          if (merged.value === 2048) {
+            self.won = true;
+          }
+        } else {
+          self.moveTile(tile, positions.farthest);
+        }
+
+        if (!self.positionsEqual(cell, tile)) {
+          moved = true; // 方块移动了
+        }
+      }
+    });
+  });
+
+  if (moved) {
+    // 添加新的随机方块
+    // 注意：在回放模式下，我们需要确保添加的方块位置和值与原始游戏相同
+    // 这里简化处理，添加一个随机方块
+    this.addRandomTile();
+
+    // 检查游戏是否结束
+    if (!this.movesAvailable()) {
+      this.over = true; // 游戏结束
+    }
+
+    // 如果需要，更新界面
+    if (updateUI) {
+      this.actuate();
+    }
+  }
+};
+
+// 调整回放速度
+GameManager.prototype.cycleReplaySpeed = function () {
+  // 速度选项：0.5, 1, 2, 5, 10
+  var speeds = [0.5, 1, 2, 5, 10];
+  var currentIndex = speeds.indexOf(this.replaySpeed);
+
+  // 切换到下一个速度
+  currentIndex = (currentIndex + 1) % speeds.length;
+  this.replaySpeed = speeds[currentIndex];
+
+  // 更新速度按钮文本
+  var button = document.getElementById("replay-speed");
+  var currentLang = window.I18n ? window.I18n.getCurrentLanguage() : "zh";
+
+  if (button) {
+    button.textContent = currentLang === "en" ?
+      "Speed: " + this.replaySpeed + "x" :
+      "速度: " + this.replaySpeed + "x";
+  }
+
+  // 如果当前正在播放，需要重新设置计时器
+  if (this.replayTimerId) {
+    this.toggleReplayPlayback(); // 停止
+    this.toggleReplayPlayback(); // 以新速度开始
+  }
+};
+
+// 退出回放模式
+GameManager.prototype.exitReplay = function () {
+  // 停止回放
+  if (this.replayTimerId) {
+    clearInterval(this.replayTimerId);
+    this.replayTimerId = null;
+  }
+
+  // 设置为非回放模式
+  this.replayMode = false;
+
+  // 移除回放控制界面
+  var controls = document.querySelector(".replay-controls");
+  if (controls) {
+    controls.parentNode.removeChild(controls);
+  }
+
+  // 移除回放信息
+  var info = document.querySelector(".replay-info");
+  if (info) {
+    info.parentNode.removeChild(info);
+  }
+
+  // 重启游戏
+  this.restart();
 };

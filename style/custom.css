@@ -425,3 +425,117 @@
         transform: translate(177px, 177px);
     }
 }
+
+/* 录像回放相关样式 */
+.replay-controls-buttons {
+    margin: 10px 0;
+    text-align: center;
+}
+
+.replay-info {
+    background: rgba(238, 228, 218, 0.35);
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    color: #776e65;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    animation: ai-panel-fade-in 0.5s ease;
+}
+
+.replay-header {
+    font-weight: bold;
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #776e65;
+}
+
+.replay-details {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.replay-controls {
+    background: rgba(238, 228, 218, 0.35);
+    padding: 15px;
+    border-radius: 6px;
+    margin: 15px 0;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    animation: ai-panel-fade-in 0.5s ease;
+}
+
+.replay-button {
+    background: #8f7a66;
+    border-radius: 3px;
+    padding: 0 15px;
+    color: white;
+    height: 35px;
+    line-height: 35px;
+    display: inline-block;
+    text-align: center;
+    margin: 0 5px 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: 0.2s ease;
+}
+
+.replay-button:hover {
+    background: #9f8a76;
+}
+
+.replay-progress-container {
+    margin-top: 15px;
+    width: 100%;
+}
+
+.replay-progress-label {
+    text-align: center;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #776e65;
+}
+
+.replay-progress-bar {
+    width: 100%;
+    height: 15px;
+    background: #bbada0;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.replay-progress-fill {
+    height: 100%;
+    background: #8f7a66;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* 移动设备适配 */
+@media screen and (max-width: 520px) {
+    .replay-button {
+        font-size: 12px;
+        padding: 0 8px;
+        margin: 0 2px 8px;
+        height: 30px;
+        line-height: 30px;
+    }
+
+    .replay-info {
+        padding: 10px;
+    }
+
+    .replay-header {
+        font-size: 16px;
+    }
+
+    .replay-details {
+        font-size: 12px;
+    }
+
+    .replay-controls {
+        padding: 10px;
+    }
+}

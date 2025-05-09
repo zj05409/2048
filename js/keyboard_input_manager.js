@@ -105,6 +105,10 @@ KeyboardInputManager.prototype.listen = function () {
   this.bindButtonPress(".ai-simulate-button", this.aiSimulate);
   this.bindButtonPress(".show-score-button", this.showScorePanel);
 
+  // 录像按钮
+  this.bindButtonPress(".export-replay-button", this.exportReplay);
+  this.bindButtonPress(".import-replay-button", this.importReplay);
+
   // Respond to swipe events
   var touchStartClientX, touchStartClientY;
   var gameContainer = document.getElementsByClassName("game-container")[0];
@@ -240,18 +244,101 @@ KeyboardInputManager.prototype.aiSimulate = function (event) {
   this.emit("aiSimulate");
 };
 
-KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {
-  var button = document.querySelector(selector);
-  if (button) {
-    button.addEventListener("click", fn.bind(this));
-    button.addEventListener(this.eventTouchend, fn.bind(this));
-  }
-};
-
 // Show score panel button
 KeyboardInputManager.prototype.showScorePanel = function (event) {
   if (event) {
     event.preventDefault();
   }
   this.emit("showScore");
+};
+
+// 导出录像
+KeyboardInputManager.prototype.exportReplay = function (event) {
+  if (event) {
+    event.preventDefault();
+  }
+  this.emit("exportReplay");
+};
+
+// 导入录像
+KeyboardInputManager.prototype.importReplay = function (event) {
+  if (event) {
+    event.preventDefault();
+  }
+  this.emit("importReplay");
+};
+
+KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {
+  var button = document.querySelector(selector);
+  if (button) {
+    // 为需要确认的按钮添加确认对话框
+    if (selector === ".restart-button" ||
+      selector === ".retry-button" ||
+      selector === ".ai-play-button" ||
+      selector === ".ai-step-button" ||
+      selector === ".export-replay-button") {
+
+      button.addEventListener("click", function (event) {
+        event.preventDefault();
+
+        // 获取当前语言
+        var currentLang = window.I18n ? window.I18n.getCurrentLanguage() : "zh";
+
+        // 根据按钮类型设置确认信息
+        var confirmMessage = "";
+        if (selector === ".restart-button" || selector === ".retry-button") {
+          confirmMessage = currentLang === "zh" ? "确定要开始新游戏吗？当前游戏进度将自动保存。" : "Start a new game? Current progress will be automatically saved.";
+        } else if (selector === ".ai-play-button") {
+          // 判断AI是否正在运行
+          var aiRunning = window.gameManager && window.gameManager.aiIsRunning;
+          if (aiRunning) {
+            // 如果AI正在运行，直接停止不需要确认
+            fn.call(this, event);
+            return;
+          }
+          confirmMessage = currentLang === "zh" ? "确定要启动AI自动模式吗？" : "Start AI auto mode?";
+        } else if (selector === ".ai-step-button") {
+          confirmMessage = currentLang === "zh" ? "确定要执行AI单步操作吗？" : "Execute a single AI step?";
+        } else if (selector === ".export-replay-button") {
+          confirmMessage = currentLang === "zh" ? "确定要导出当前游戏录像吗？" : "Export current game replay?";
+        }
+
+        if (confirm(confirmMessage)) {
+          fn.call(this, event);
+        }
+      }.bind(this));
+
+      button.addEventListener(this.eventTouchend, function (event) {
+        // 触摸事件的处理与点击相同
+        event.preventDefault();
+
+        var currentLang = window.I18n ? window.I18n.getCurrentLanguage() : "zh";
+
+        var confirmMessage = "";
+        if (selector === ".restart-button" || selector === ".retry-button") {
+          confirmMessage = currentLang === "zh" ? "确定要开始新游戏吗？当前游戏进度将自动保存。" : "Start a new game? Current progress will be automatically saved.";
+        } else if (selector === ".ai-play-button") {
+          var aiRunning = window.gameManager && window.gameManager.aiIsRunning;
+          if (aiRunning) {
+            fn.call(this, event);
+            return;
+          }
+          confirmMessage = currentLang === "zh" ? "确定要启动AI自动模式吗？" : "Start AI auto mode?";
+        } else if (selector === ".ai-step-button") {
+          confirmMessage = currentLang === "zh" ? "确定要执行AI单步操作吗？" : "Execute a single AI step?";
+        } else if (selector === ".export-replay-button") {
+          confirmMessage = currentLang === "zh" ? "确定要导出当前游戏录像吗？" : "Export current game replay?";
+        }
+
+        if (confirm(confirmMessage)) {
+          fn.call(this, event);
+        }
+      }.bind(this));
+
+    } else {
+      // 其他按钮保持原样
+      button.addEventListener("click", fn.bind(this));
+      button.addEventListener(this.eventTouchend, fn.bind(this));
+    }
+  }
 };
