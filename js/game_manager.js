@@ -1,8 +1,12 @@
+// 导入必要的依赖
+import {Grid} from "./grid.js";
+import {Tile} from "./tile.js";
+
 function GameManager(size, InputManager, Actuator, StorageManager) {
   this.size = size; // Size of the grid
-  this.inputManager = new InputManager;
-  this.storageManager = new StorageManager;
-  this.actuator = new Actuator;
+  this.inputManager = new InputManager();
+  this.storageManager = new StorageManager();
+  this.actuator = new Actuator();
 
   this.startTiles = 2;
 
@@ -57,7 +61,7 @@ GameManager.prototype.restart = function () {
     // var maxTile = this.getMaxTile();
     // var date = new Date();
     // var formattedDate = date.toLocaleDateString() + " " + date.toLocaleTimeString();
-    var saveName = "自动保存";// + formattedDate;
+    var saveName = "自动保存"; // + formattedDate;
     this.saveCurrentGame(saveName);
   }
 
@@ -126,8 +130,7 @@ GameManager.prototype.setup = function () {
 
   // Reload the game from a previous game if present
   if (previousState) {
-    this.grid = new Grid(previousState.grid.size,
-      previousState.grid.cells); // Reload grid
+    this.grid = new Grid(previousState.grid.size, previousState.grid.cells); // Reload grid
     this.score = previousState.score;
     this.over = previousState.over;
     this.won = previousState.won;
@@ -218,9 +221,8 @@ GameManager.prototype.actuate = function () {
     over: this.over,
     won: this.won,
     bestScore: this.storageManager.getBestScore(),
-    terminated: this.isGameTerminated()
+    terminated: this.isGameTerminated(),
   });
-
 };
 
 // Represent the current game as an object
@@ -230,7 +232,7 @@ GameManager.prototype.serialize = function () {
     score: this.score,
     over: this.over,
     won: this.won,
-    keepPlaying: this.keepPlaying
+    keepPlaying: this.keepPlaying,
   };
 };
 
@@ -281,7 +283,7 @@ GameManager.prototype.move = function (direction) {
   // Traverse the grid in the right direction and move tiles
   traversals.x.forEach(function (x) {
     traversals.y.forEach(function (y) {
-      cell = { x: x, y: y };
+      cell = {x: x, y: y};
       tile = self.grid.cellContent(cell);
 
       if (tile) {
@@ -339,10 +341,10 @@ GameManager.prototype.move = function (direction) {
 GameManager.prototype.getVector = function (direction) {
   // Vectors representing tile movement
   var map = {
-    0: { x: 0, y: -1 }, // Up
-    1: { x: 1, y: 0 },  // Right
-    2: { x: 0, y: 1 },  // Down
-    3: { x: -1, y: 0 }   // Left
+    0: {x: 0, y: -1}, // Up
+    1: {x: 1, y: 0}, // Right
+    2: {x: 0, y: 1}, // Down
+    3: {x: -1, y: 0}, // Left
   };
 
   return map[direction];
@@ -350,7 +352,7 @@ GameManager.prototype.getVector = function (direction) {
 
 // Build a list of positions to traverse in the right order
 GameManager.prototype.buildTraversals = function (vector) {
-  var traversals = { x: [], y: [] };
+  var traversals = {x: [], y: []};
 
   for (var pos = 0; pos < this.size; pos++) {
     traversals.x.push(pos);
@@ -370,13 +372,12 @@ GameManager.prototype.findFarthestPosition = function (cell, vector) {
   // Progress towards the vector direction until an obstacle is found
   do {
     previous = cell;
-    cell = { x: previous.x + vector.x, y: previous.y + vector.y };
-  } while (this.grid.withinBounds(cell) &&
-    this.grid.cellAvailable(cell));
+    cell = {x: previous.x + vector.x, y: previous.y + vector.y};
+  } while (this.grid.withinBounds(cell) && this.grid.cellAvailable(cell));
 
   return {
     farthest: previous,
-    next: cell // Used to check if a merge is required
+    next: cell, // Used to check if a merge is required
   };
 };
 
@@ -392,12 +393,12 @@ GameManager.prototype.tileMatchesAvailable = function () {
 
   for (var x = 0; x < this.size; x++) {
     for (var y = 0; y < this.size; y++) {
-      tile = this.grid.cellContent({ x: x, y: y });
+      tile = this.grid.cellContent({x: x, y: y});
 
       if (tile) {
         for (var direction = 0; direction < 4; direction++) {
           var vector = self.getVector(direction);
-          var cell = { x: x + vector.x, y: y + vector.y };
+          var cell = {x: x + vector.x, y: y + vector.y};
 
           var other = self.grid.cellContent(cell);
 
@@ -478,7 +479,8 @@ GameManager.prototype.aiStep = function (isAutoMode) {
 
 // 渲染棋盘HTML的辅助方法
 GameManager.prototype.renderBoardHTML = function (board) {
-  if (!board || !board.grid) return "<div class='no-board-data'>没有棋盘数据</div>";
+  if (!board || !board.grid)
+    return "<div class='no-board-data'>没有棋盘数据</div>";
 
   var html = "<div class='board-grid'>";
   for (var row = 0; row < 4; row++) {
@@ -520,72 +522,72 @@ GameManager.prototype.showAIDecisionDetails = function (moveDetails) {
   var translations = {
     title: {
       zh: "AI决策分析",
-      en: "AI Decision Analysis"
+      en: "AI Decision Analysis",
     },
     bestMove: {
       zh: "最佳移动方向",
-      en: "Best Move"
+      en: "Best Move",
     },
     factors: {
       zh: "评估因素",
-      en: "Evaluation Factors"
+      en: "Evaluation Factors",
     },
     weights: {
       zh: "评估权重",
-      en: "Evaluation Weights"
+      en: "Evaluation Weights",
     },
     scoreExplanation: {
       zh: "评分说明",
-      en: "Score Explanation"
+      en: "Score Explanation",
     },
     direction: {
       zh: "方向",
-      en: "Direction"
+      en: "Direction",
     },
     algorithmScore: {
       zh: "AI决策分数",
-      en: "AI Decision Score"
+      en: "AI Decision Score",
     },
     empty: {
       zh: "空格",
-      en: "Empty Cells"
+      en: "Empty Cells",
     },
     merges: {
       zh: "可合并",
-      en: "Merges"
+      en: "Merges",
     },
     monotonicity: {
       zh: "单调性",
-      en: "Monotonicity"
+      en: "Monotonicity",
     },
     sum: {
       zh: "总和",
-      en: "Sum"
+      en: "Sum",
     },
     comparison: {
       zh: "方向对比",
-      en: "Direction Comparison"
+      en: "Direction Comparison",
     },
     invalid: {
       zh: "无效移动",
-      en: "Invalid Move"
+      en: "Invalid Move",
     },
     currentBoard: {
       zh: "当前棋盘",
-      en: "Current Board"
+      en: "Current Board",
     },
     afterMove: {
       zh: "移动后棋盘",
-      en: "Board After Move"
+      en: "Board After Move",
     },
     bracketsExplanation: {
       zh: "括号中的数字表示该因素对总分的贡献",
-      en: "Numbers in brackets indicate contribution to total score"
+      en: "Numbers in brackets indicate contribution to total score",
     },
     close: {
       zh: "关闭",
-      en: "Close"
-    }
+      en: "Close",
+    },
   };
 
   // 创建标题和关闭按钮的容器
@@ -604,9 +606,9 @@ GameManager.prototype.showAIDecisionDetails = function (moveDetails) {
   closeButton.addEventListener("click", function () {
     container.style.display = "none";
     // 移除动画类，确保下次显示时动画能重新触发
-    container.style.animation = 'none';
+    container.style.animation = "none";
     setTimeout(function () {
-      container.style.animation = '';
+      container.style.animation = "";
     }, 10);
   });
   headerContainer.appendChild(closeButton);
@@ -616,21 +618,28 @@ GameManager.prototype.showAIDecisionDetails = function (moveDetails) {
   // 创建最佳移动信息
   var bestMoveDiv = document.createElement("div");
   bestMoveDiv.className = "ai-best-move";
-  bestMoveDiv.innerHTML = "<strong>" + translations.bestMove[currentLang] + ":</strong> " +
+  bestMoveDiv.innerHTML =
+    "<strong>" +
+    translations.bestMove[currentLang] +
+    ":</strong> " +
     moveDetails.bestDirection;
   container.appendChild(bestMoveDiv);
 
   // 添加括号解释说明
   var bracketsExplanationDiv = document.createElement("div");
   bracketsExplanationDiv.className = "ai-brackets-explanation";
-  bracketsExplanationDiv.textContent = translations.bracketsExplanation[currentLang];
+  bracketsExplanationDiv.textContent =
+    translations.bracketsExplanation[currentLang];
   container.appendChild(bracketsExplanationDiv);
 
   // 创建评分说明（如果有）
   if (moveDetails.scoreExplanation) {
     var scoreExplanationDiv = document.createElement("div");
     scoreExplanationDiv.className = "ai-score-explanation";
-    scoreExplanationDiv.innerHTML = "<strong>" + translations.scoreExplanation[currentLang] + ":</strong> " +
+    scoreExplanationDiv.innerHTML =
+      "<strong>" +
+      translations.scoreExplanation[currentLang] +
+      ":</strong> " +
       moveDetails.scoreExplanation;
     container.appendChild(scoreExplanationDiv);
   }
@@ -638,7 +647,8 @@ GameManager.prototype.showAIDecisionDetails = function (moveDetails) {
   // 创建评估因素说明
   var factorsDiv = document.createElement("div");
   factorsDiv.className = "ai-factors";
-  factorsDiv.innerHTML = "<strong>" + translations.factors[currentLang] + ":</strong>";
+  factorsDiv.innerHTML =
+    "<strong>" + translations.factors[currentLang] + ":</strong>";
 
   var factorsList = document.createElement("ul");
   for (var factor in moveDetails.factorExplanations) {
@@ -652,7 +662,8 @@ GameManager.prototype.showAIDecisionDetails = function (moveDetails) {
   // 创建权重说明
   var weightsDiv = document.createElement("div");
   weightsDiv.className = "ai-weights";
-  weightsDiv.innerHTML = "<strong>" + translations.weights[currentLang] + ":</strong>";
+  weightsDiv.innerHTML =
+    "<strong>" + translations.weights[currentLang] + ":</strong>";
 
   var weightsList = document.createElement("ul");
   for (var weight in moveDetails.weightExplanations) {
@@ -666,7 +677,8 @@ GameManager.prototype.showAIDecisionDetails = function (moveDetails) {
   // 创建棋盘状态显示区域
   var boardsDiv = document.createElement("div");
   boardsDiv.className = "ai-boards";
-  boardsDiv.innerHTML = "<strong>" + translations.currentBoard[currentLang] + ":</strong>";
+  boardsDiv.innerHTML =
+    "<strong>" + translations.currentBoard[currentLang] + ":</strong>";
 
   // 添加当前棋盘状态视图
   if (moveDetails.currentBoard) {
@@ -681,7 +693,8 @@ GameManager.prototype.showAIDecisionDetails = function (moveDetails) {
   // 创建方向比较表格
   var comparisonDiv = document.createElement("div");
   comparisonDiv.className = "ai-comparison";
-  comparisonDiv.innerHTML = "<strong>" + translations.comparison[currentLang] + ":</strong>";
+  comparisonDiv.innerHTML =
+    "<strong>" + translations.comparison[currentLang] + ":</strong>";
 
   var table = document.createElement("table");
   table.className = "ai-table";
@@ -695,7 +708,7 @@ GameManager.prototype.showAIDecisionDetails = function (moveDetails) {
     translations.empty[currentLang],
     translations.merges[currentLang],
     translations.monotonicity[currentLang],
-    translations.sum[currentLang]
+    translations.sum[currentLang],
   ];
 
   headers.forEach(function (headerText) {
@@ -740,24 +753,38 @@ GameManager.prototype.showAIDecisionDetails = function (moveDetails) {
 
       // 空格
       var tdEmpty = document.createElement("td");
-      tdEmpty.textContent = moveScore.details.empty + " (" + Math.round(moveScore.details.emptyScore) + ")";
+      tdEmpty.textContent =
+        moveScore.details.empty +
+        " (" +
+        Math.round(moveScore.details.emptyScore) +
+        ")";
       tr.appendChild(tdEmpty);
 
       // 可合并
       var tdMerges = document.createElement("td");
-      tdMerges.textContent = moveScore.details.merges + " (" + Math.round(moveScore.details.mergesScore) + ")";
+      tdMerges.textContent =
+        moveScore.details.merges +
+        " (" +
+        Math.round(moveScore.details.mergesScore) +
+        ")";
       tr.appendChild(tdMerges);
 
       // 单调性
       var tdMonotonicity = document.createElement("td");
-      tdMonotonicity.textContent = moveScore.details.monotonicity.toFixed(2) + " (" +
-        Math.round(moveScore.details.monotonicityScore) + ")";
+      tdMonotonicity.textContent =
+        moveScore.details.monotonicity.toFixed(2) +
+        " (" +
+        Math.round(moveScore.details.monotonicityScore) +
+        ")";
       tr.appendChild(tdMonotonicity);
 
       // 总和
       var tdSum = document.createElement("td");
-      tdSum.textContent = moveScore.details.sum.toFixed(2) + " (" +
-        Math.round(moveScore.details.sumScore) + ")";
+      tdSum.textContent =
+        moveScore.details.sum.toFixed(2) +
+        " (" +
+        Math.round(moveScore.details.sumScore) +
+        ")";
       tr.appendChild(tdSum);
     }
 
@@ -774,7 +801,8 @@ GameManager.prototype.showAIDecisionDetails = function (moveDetails) {
 
       var boardTitle = document.createElement("div");
       boardTitle.className = "board-after-move-title";
-      boardTitle.textContent = translations.afterMove[currentLang] + ": " + moveScore.direction;
+      boardTitle.textContent =
+        translations.afterMove[currentLang] + ": " + moveScore.direction;
 
       var boardDisplay = document.createElement("div");
       boardDisplay.className = "ai-board board-after-move";
@@ -811,8 +839,8 @@ GameManager.prototype.aiPlay = function () {
     // 使用i18n库的翻译
     if (window.I18n) {
       var translations = {
-        "zh": "AI自动",
-        "en": "AI Auto"
+        zh: "AI自动",
+        en: "AI Auto",
       };
       button.textContent = translations[currentLang];
     } else {
@@ -867,7 +895,8 @@ GameManager.prototype.saveCurrentGame = function (name) {
   if (!name || name.trim() === "") {
     // 如果没有提供名称，使用默认名称
     var date = new Date();
-    name = "存档 " + date.toLocaleDateString() + " " + date.toLocaleTimeString();
+    name =
+      "存档 " + date.toLocaleDateString() + " " + date.toLocaleTimeString();
   }
 
   var gameState = this.serialize();
@@ -939,9 +968,10 @@ GameManager.prototype.showSaveDialog = function () {
 
   // 默认存档名
   var date = new Date();
-  input.value = (currentLang === "zh" ?
-    "存档 " + date.toLocaleDateString() + " " + date.toLocaleTimeString() :
-    "Save " + date.toLocaleDateString() + " " + date.toLocaleTimeString());
+  input.value =
+    currentLang === "zh"
+      ? "存档 " + date.toLocaleDateString() + " " + date.toLocaleTimeString()
+      : "Save " + date.toLocaleDateString() + " " + date.toLocaleTimeString();
 
   // 按钮组
   var buttonGroup = document.createElement("div");
@@ -959,7 +989,8 @@ GameManager.prototype.showSaveDialog = function () {
   var savedGames = this.getSavedGames();
   if (savedGames.length > 0) {
     var existingTitle = document.createElement("h4");
-    existingTitle.textContent = currentLang === "zh" ? "已有存档：" : "Existing Saves:";
+    existingTitle.textContent =
+      currentLang === "zh" ? "已有存档：" : "Existing Saves:";
     dialog.appendChild(existingTitle);
 
     var saveList = document.createElement("div");
@@ -971,7 +1002,8 @@ GameManager.prototype.showSaveDialog = function () {
 
       var saveInfo = document.createElement("div");
       saveInfo.className = "save-info";
-      saveInfo.textContent = save.name + " (" + new Date(save.timestamp).toLocaleString() + ")";
+      saveInfo.textContent =
+        save.name + " (" + new Date(save.timestamp).toLocaleString() + ")";
 
       saveItem.appendChild(saveInfo);
       saveList.appendChild(saveItem);
@@ -1022,7 +1054,8 @@ GameManager.prototype.showSaveDialog = function () {
 
   // 按ESC键关闭对话框
   document.addEventListener("keydown", function escHandler(e) {
-    if (e.keyCode === 27) { // ESC键
+    if (e.keyCode === 27) {
+      // ESC键
       document.body.removeChild(overlay);
       document.removeEventListener("keydown", escHandler);
     }
@@ -1072,7 +1105,8 @@ GameManager.prototype.showLoadDialog = function () {
     // 显示存档名称、最大分数和保存时间
     var dateStr = new Date(save.timestamp).toLocaleString();
     var maxScoreStr = currentLang === "zh" ? "最大方块: " : "Max Tile: ";
-    saveInfo.textContent = save.name + " (" + maxScoreStr + save.maxScore + ", " + dateStr + ")";
+    saveInfo.textContent =
+      save.name + " (" + maxScoreStr + save.maxScore + ", " + dateStr + ")";
 
     var actionButtons = document.createElement("div");
     actionButtons.className = "save-actions";
@@ -1120,7 +1154,13 @@ GameManager.prototype.showLoadDialog = function () {
     } else if (e.target.classList.contains("delete-button")) {
       var id = parseInt(e.target.getAttribute("data-id"));
 
-      if (confirm(currentLang === "zh" ? "确定要删除这个存档吗？" : "Are you sure you want to delete this save?")) {
+      if (
+        confirm(
+          currentLang === "zh"
+            ? "确定要删除这个存档吗？"
+            : "Are you sure you want to delete this save?"
+        )
+      ) {
         self.deleteSavedGame(id);
 
         // 从DOM中移除对应的存档项
@@ -1150,7 +1190,8 @@ GameManager.prototype.showLoadDialog = function () {
 
   // 按ESC键关闭对话框
   document.addEventListener("keydown", function escHandler(e) {
-    if (e.keyCode === 27) { // ESC键
+    if (e.keyCode === 27) {
+      // ESC键
       document.body.removeChild(overlay);
       document.removeEventListener("keydown", escHandler);
     }
@@ -1180,7 +1221,7 @@ GameManager.prototype.aiSimulate = function () {
 
       // 添加滚动功能 - 确保分析面板在视图中可见
       setTimeout(function () {
-        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        container.scrollIntoView({behavior: "smooth", block: "start"});
       }, 100);
     }
 
@@ -1223,12 +1264,12 @@ GameManager.prototype.updatePreviousBoardDisplay = function () {
   var translations = {
     title: {
       zh: "上一步棋盘",
-      en: "Previous Board"
+      en: "Previous Board",
     },
     empty: {
       zh: "没有历史记录",
-      en: "No History"
-    }
+      en: "No History",
+    },
   };
 
   // 清空容器
@@ -1259,7 +1300,10 @@ GameManager.prototype.updatePreviousBoardDisplay = function () {
   }
 
   // 创建临时Grid对象
-  var previousGrid = new Grid(previousState.grid.size, previousState.grid.cells);
+  var previousGrid = new Grid(
+    previousState.grid.size,
+    previousState.grid.cells
+  );
 
   // 将Grid转换为Board格式以便使用renderBoardHTML方法
   var previousBoard = new Board();
@@ -1287,52 +1331,52 @@ GameManager.prototype.updateRealTimeScoreDisplay = function () {
   var translations = {
     title: {
       zh: "实时评分分析",
-      en: "Real-time Score Analysis"
+      en: "Real-time Score Analysis",
     },
     factor: {
       zh: "评分因素",
-      en: "Factor"
+      en: "Factor",
     },
     current: {
       zh: "当前步骤",
-      en: "Current"
+      en: "Current",
     },
     previous: {
       zh: "上一步骤",
-      en: "Previous"
+      en: "Previous",
     },
     change: {
       zh: "变化",
-      en: "Change"
+      en: "Change",
     },
     empty: {
       zh: "空格",
-      en: "Empty Cells"
+      en: "Empty Cells",
     },
     merges: {
       zh: "可合并",
-      en: "Merges"
+      en: "Merges",
     },
     monotonicity: {
       zh: "单调性",
-      en: "Monotonicity"
+      en: "Monotonicity",
     },
     sum: {
       zh: "总和",
-      en: "Sum"
+      en: "Sum",
     },
     total: {
       zh: "总评分",
-      en: "Total Score"
+      en: "Total Score",
     },
     toggle: {
       zh: "显示/隐藏",
-      en: "Show/Hide"
+      en: "Show/Hide",
     },
     close: {
       zh: "关闭",
-      en: "Close"
-    }
+      en: "Close",
+    },
   };
 
   // 清空容器
@@ -1354,9 +1398,9 @@ GameManager.prototype.updateRealTimeScoreDisplay = function () {
   closeButton.addEventListener("click", function () {
     container.style.display = "none";
     // 移除动画类，确保下次显示时动画能重新触发
-    container.style.animation = 'none';
+    container.style.animation = "none";
     setTimeout(function () {
-      container.style.animation = '';
+      container.style.animation = "";
     }, 10);
   });
   headerContainer.appendChild(closeButton);
@@ -1375,7 +1419,7 @@ GameManager.prototype.updateRealTimeScoreDisplay = function () {
     translations.factor[currentLang],
     translations.current[currentLang],
     translations.previous[currentLang],
-    translations.change[currentLang]
+    translations.change[currentLang],
   ];
 
   headers.forEach(function (headerText) {
@@ -1413,8 +1457,8 @@ GameManager.prototype.updateRealTimeScoreDisplay = function () {
       previous: this.previousScoreDetails.emptyScore,
       raw: {
         current: this.currentScoreDetails.empty,
-        previous: this.previousScoreDetails.empty
-      }
+        previous: this.previousScoreDetails.empty,
+      },
     },
     {
       name: translations.merges[currentLang],
@@ -1422,8 +1466,8 @@ GameManager.prototype.updateRealTimeScoreDisplay = function () {
       previous: this.previousScoreDetails.mergesScore,
       raw: {
         current: this.currentScoreDetails.merges,
-        previous: this.previousScoreDetails.merges
-      }
+        previous: this.previousScoreDetails.merges,
+      },
     },
     {
       name: translations.monotonicity[currentLang],
@@ -1431,8 +1475,8 @@ GameManager.prototype.updateRealTimeScoreDisplay = function () {
       previous: this.previousScoreDetails.monotonicityScore,
       raw: {
         current: this.currentScoreDetails.monotonicity,
-        previous: this.previousScoreDetails.monotonicity
-      }
+        previous: this.previousScoreDetails.monotonicity,
+      },
     },
     {
       name: translations.sum[currentLang],
@@ -1440,15 +1484,15 @@ GameManager.prototype.updateRealTimeScoreDisplay = function () {
       previous: this.previousScoreDetails.sumScore,
       raw: {
         current: this.currentScoreDetails.sum,
-        previous: this.previousScoreDetails.sum
-      }
+        previous: this.previousScoreDetails.sum,
+      },
     },
     {
       name: translations.total[currentLang],
       current: currentTotal,
       previous: previousTotal,
-      isTotal: true
-    }
+      isTotal: true,
+    },
   ];
 
   factors.forEach(function (factor) {
@@ -1469,7 +1513,11 @@ GameManager.prototype.updateRealTimeScoreDisplay = function () {
 
     // 如果有原始值，显示原始值和评分
     if (factor.raw) {
-      tdCurrent.textContent = Math.round(factor.raw.current) + " (" + Math.round(factor.current) + ")";
+      tdCurrent.textContent =
+        Math.round(factor.raw.current) +
+        " (" +
+        Math.round(factor.current) +
+        ")";
     } else {
       tdCurrent.textContent = Math.round(factor.current);
     }
@@ -1480,7 +1528,11 @@ GameManager.prototype.updateRealTimeScoreDisplay = function () {
 
     // 如果有原始值，显示原始值和评分
     if (factor.raw) {
-      tdPrevious.textContent = Math.round(factor.raw.previous) + " (" + Math.round(factor.previous) + ")";
+      tdPrevious.textContent =
+        Math.round(factor.raw.previous) +
+        " (" +
+        Math.round(factor.previous) +
+        ")";
     } else {
       tdPrevious.textContent = Math.round(factor.previous);
     }
@@ -1527,7 +1579,7 @@ GameManager.prototype.toggleScorePanel = function () {
     // 切换面板显示状态
     if (container.style.display === "none") {
       container.style.display = "block";
-      container.style.animation = 'none';
+      container.style.animation = "none";
 
       // 更新按钮文本为"隐藏评分"并修改样式
       if (button) {
@@ -1541,8 +1593,8 @@ GameManager.prototype.toggleScorePanel = function () {
       }
 
       setTimeout(function () {
-        container.style.animation = 'ai-panel-fade-in 0.5s ease';
-        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        container.style.animation = "ai-panel-fade-in 0.5s ease";
+        container.scrollIntoView({behavior: "smooth", block: "start"});
       }, 10);
     } else {
       container.style.display = "none";
@@ -1564,9 +1616,11 @@ GameManager.prototype.toggleScorePanel = function () {
 // 导出录像数据
 GameManager.prototype.exportReplay = function () {
   if (!this.initialState || this.moveHistory.length === 0) {
-    alert(window.I18n && window.I18n.getCurrentLanguage() === "en" ?
-      "No replay data available!" :
-      "没有可用的录像数据！");
+    alert(
+      window.I18n && window.I18n.getCurrentLanguage() === "en"
+        ? "No replay data available!"
+        : "没有可用的录像数据！"
+    );
     return;
   }
 
@@ -1577,18 +1631,19 @@ GameManager.prototype.exportReplay = function () {
     initialState: this.initialState,
     moves: this.moveHistory,
     score: this.score,
-    maxTile: this.getMaxTile()
+    maxTile: this.getMaxTile(),
   };
 
   // 将数据转换为JSON字符串
   var jsonData = JSON.stringify(replayData);
 
   // 创建Blob
-  var blob = new Blob([jsonData], { type: "application/json" });
+  var blob = new Blob([jsonData], {type: "application/json"});
 
   // 创建下载链接
   var a = document.createElement("a");
-  a.download = "2048_replay_" + new Date().toISOString().replace(/:/g, "-") + ".json";
+  a.download =
+    "2048_replay_" + new Date().toISOString().replace(/:/g, "-") + ".json";
   a.href = URL.createObjectURL(blob);
   a.style.display = "none";
 
@@ -1649,16 +1704,22 @@ GameManager.prototype.importReplay = function (file) {
       var replayData = JSON.parse(e.target.result);
 
       // 验证数据
-      if (!replayData.initialState || !Array.isArray(replayData.moves) || replayData.moves.length === 0) {
+      if (
+        !replayData.initialState ||
+        !Array.isArray(replayData.moves) ||
+        replayData.moves.length === 0
+      ) {
         throw new Error("Invalid replay data");
       }
 
       // 开始回放
       self.startReplay(replayData);
     } catch (err) {
-      alert(window.I18n && window.I18n.getCurrentLanguage() === "en" ?
-        "Invalid replay file!" :
-        "无效的录像文件！");
+      alert(
+        window.I18n && window.I18n.getCurrentLanguage() === "en"
+          ? "Invalid replay file!"
+          : "无效的录像文件！"
+      );
       console.error("Error importing replay:", err);
     }
   };
@@ -1676,8 +1737,10 @@ GameManager.prototype.startReplay = function (replayData) {
   this.showReplayControls();
 
   // 从初始状态开始重新加载游戏
-  this.grid = new Grid(replayData.initialState.grid.size,
-    replayData.initialState.grid.cells);
+  this.grid = new Grid(
+    replayData.initialState.grid.size,
+    replayData.initialState.grid.cells
+  );
   this.score = replayData.initialState.score;
   this.over = replayData.initialState.over;
   this.won = replayData.initialState.won;
@@ -1709,13 +1772,21 @@ GameManager.prototype.showReplayInfo = function (replayData) {
   var date = new Date(replayData.timestamp);
   var dateStr = date.toLocaleDateString() + " " + date.toLocaleTimeString();
 
-  container.innerHTML = "<div class='replay-header'>" +
+  container.innerHTML =
+    "<div class='replay-header'>" +
     (currentLang === "en" ? "Replay Mode" : "录像回放模式") +
     "</div><div class='replay-details'>" +
-    (currentLang === "en" ? "Date: " : "日期：") + dateStr + "<br>" +
-    (currentLang === "en" ? "Moves: " : "总步数：") + replayData.moves.length + "<br>" +
-    (currentLang === "en" ? "Final Score: " : "最终得分：") + replayData.score + "<br>" +
-    (currentLang === "en" ? "Max Tile: " : "最大方块：") + replayData.maxTile +
+    (currentLang === "en" ? "Date: " : "日期：") +
+    dateStr +
+    "<br>" +
+    (currentLang === "en" ? "Moves: " : "总步数：") +
+    replayData.moves.length +
+    "<br>" +
+    (currentLang === "en" ? "Final Score: " : "最终得分：") +
+    replayData.score +
+    "<br>" +
+    (currentLang === "en" ? "Max Tile: " : "最大方块：") +
+    replayData.maxTile +
     "</div>";
 };
 
@@ -1732,7 +1803,10 @@ GameManager.prototype.showReplayControls = function () {
 
     var gameContainer = document.querySelector(".game-container");
     if (gameContainer) {
-      gameContainer.parentNode.insertBefore(container, gameContainer.nextSibling);
+      gameContainer.parentNode.insertBefore(
+        container,
+        gameContainer.nextSibling
+      );
     } else {
       document.body.appendChild(container);
     }
@@ -1746,28 +1820,41 @@ GameManager.prototype.showReplayControls = function () {
     {
       id: "replay-prev",
       text: currentLang === "en" ? "Previous" : "上一步",
-      handler: function () { self.replayPrevMove(); }
+      handler: function () {
+        self.replayPrevMove();
+      },
     },
     {
       id: "replay-playpause",
       text: currentLang === "en" ? "Play" : "播放",
-      handler: function () { self.toggleReplayPlayback(); }
+      handler: function () {
+        self.toggleReplayPlayback();
+      },
     },
     {
       id: "replay-next",
       text: currentLang === "en" ? "Next" : "下一步",
-      handler: function () { self.replayNextMove(); }
+      handler: function () {
+        self.replayNextMove();
+      },
     },
     {
       id: "replay-speed",
-      text: currentLang === "en" ? "Speed: " + self.replaySpeed + "x" : "速度: " + self.replaySpeed + "x",
-      handler: function () { self.cycleReplaySpeed(); }
+      text:
+        currentLang === "en"
+          ? "Speed: " + self.replaySpeed + "x"
+          : "速度: " + self.replaySpeed + "x",
+      handler: function () {
+        self.cycleReplaySpeed();
+      },
     },
     {
       id: "replay-exit",
       text: currentLang === "en" ? "Exit Replay" : "退出回放",
-      handler: function () { self.exitReplay(); }
-    }
+      handler: function () {
+        self.exitReplay();
+      },
+    },
   ];
 
   controls.forEach(function (control) {
@@ -1806,7 +1893,8 @@ GameManager.prototype.updateReplayProgress = function () {
   var progressFill = document.querySelector(".replay-progress-fill");
 
   if (progressLabel && progressFill && this.moveHistory.length > 0) {
-    progressLabel.textContent = this.replayIndex + " / " + this.moveHistory.length;
+    progressLabel.textContent =
+      this.replayIndex + " / " + this.moveHistory.length;
     var percentage = (this.replayIndex / this.moveHistory.length) * 100;
     progressFill.style.width = percentage + "%";
   }
@@ -1870,8 +1958,10 @@ GameManager.prototype.replayPrevMove = function () {
   if (this.replayIndex === 1) {
     this.replayIndex = 0;
     // 重置到初始状态
-    this.grid = new Grid(this.initialState.grid.size,
-      this.initialState.grid.cells);
+    this.grid = new Grid(
+      this.initialState.grid.size,
+      this.initialState.grid.cells
+    );
     this.score = this.initialState.score;
     this.over = this.initialState.over;
     this.won = this.initialState.won;
@@ -1884,8 +1974,10 @@ GameManager.prototype.replayPrevMove = function () {
     this.replayIndex -= 1;
 
     // 重置到初始状态
-    this.grid = new Grid(this.initialState.grid.size,
-      this.initialState.grid.cells);
+    this.grid = new Grid(
+      this.initialState.grid.size,
+      this.initialState.grid.cells
+    );
     this.score = this.initialState.score;
     this.over = this.initialState.over;
     this.won = this.initialState.won;
@@ -1919,7 +2011,7 @@ GameManager.prototype.replayMove = function (direction, updateUI) {
   // 按指定方向移动方块
   traversals.x.forEach(function (x) {
     traversals.y.forEach(function (y) {
-      var cell = { x: x, y: y };
+      var cell = {x: x, y: y};
       var tile = self.grid.cellContent(cell);
 
       if (tile) {
@@ -1988,9 +2080,10 @@ GameManager.prototype.cycleReplaySpeed = function () {
   var currentLang = window.I18n ? window.I18n.getCurrentLanguage() : "zh";
 
   if (button) {
-    button.textContent = currentLang === "en" ?
-      "Speed: " + this.replaySpeed + "x" :
-      "速度: " + this.replaySpeed + "x";
+    button.textContent =
+      currentLang === "en"
+        ? "Speed: " + this.replaySpeed + "x"
+        : "速度: " + this.replaySpeed + "x";
   }
 
   // 如果当前正在播放，需要重新设置计时器
@@ -2026,3 +2119,6 @@ GameManager.prototype.exitReplay = function () {
   // 重启游戏
   this.restart();
 };
+
+// 导出GameManager类
+export {GameManager};

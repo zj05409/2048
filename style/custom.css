@@ -1,541 +1,674 @@
 /* 游戏布局容器 */
 .game-layout-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    margin: 20px 0;
-    align-items: stretch;
-    touch-action: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+  align-items: stretch;
+  touch-action: none;
 }
 
 /* 历史棋盘容器 */
 .previous-board-container {
-    min-width: 210px;
-    width: auto;
-    max-width: 300px;
-    flex-shrink: 0;
-    flex-grow: 1;
-    background: rgba(238, 228, 218, 0.35);
-    padding: 15px;
-    border-radius: 6px;
-    color: #776e65;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    animation: ai-panel-fade-in 0.5s ease;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    height: 100%;
+  min-width: 210px;
+  width: auto;
+  max-width: 300px;
+  flex-shrink: 0;
+  flex-grow: 1;
+  background: rgba(238, 228, 218, 0.35);
+  padding: 15px;
+  border-radius: 6px;
+  color: #776e65;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  animation: ai-panel-fade-in 0.5s ease;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100%;
 }
 
 .previous-board-container h3 {
-    margin: 0 0 10px 0;
-    font-size: 18px;
-    text-align: center;
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  text-align: center;
 }
 
 /* 实时评分容器样式 */
 .realtime-score-container {
-    min-width: 210px;
-    width: auto;
-    max-width: 350px;
-    flex-shrink: 0;
-    flex-grow: 1;
-    margin: 0;
-    background: rgba(238, 228, 218, 0.35);
-    padding: 15px;
-    border-radius: 6px;
-    color: #776e65;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    animation: ai-panel-fade-in 0.5s ease;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    height: 100%;
+  min-width: 210px;
+  width: auto;
+  max-width: 350px;
+  flex-shrink: 0;
+  flex-grow: 1;
+  margin: 0;
+  background: rgba(238, 228, 218, 0.35);
+  padding: 15px;
+  border-radius: 6px;
+  color: #776e65;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  animation: ai-panel-fade-in 0.5s ease;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100%;
 }
 
 /* 实时评分表格样式 */
 .realtime-score-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    font-size: 12px;
-    table-layout: auto;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 12px;
+  table-layout: auto;
 }
 
 .realtime-score-table th,
 .realtime-score-table td {
-    border: 1px solid #bbada0;
-    padding: 4px;
-    text-align: center;
-    word-wrap: break-word;
-    max-width: 80px;
-    overflow: hidden;
+  border: 1px solid #bbada0;
+  padding: 4px;
+  text-align: center;
+  word-wrap: break-word;
+  max-width: 80px;
+  overflow: hidden;
 }
 
 .realtime-score-table th {
-    background-color: #bbada0;
-    color: white;
+  background-color: #bbada0;
+  color: white;
 }
 
 /* 移动设备响应式布局 */
 @media screen and (max-width: 1050px) {
-    .game-layout-container {
-        flex-direction: column;
-        align-items: center;
-    }
+  .game-layout-container {
+    flex-direction: column;
+    align-items: center;
+  }
 
-    .previous-board-container,
-    .realtime-score-container {
-        width: 90%;
-        max-width: 500px;
-        margin: 10px auto;
-    }
+  .previous-board-container,
+  .realtime-score-container {
+    width: 90%;
+    max-width: 500px;
+    margin: 10px auto;
+  }
 }
 
 /* 移动设备触摸交互优化 */
 .mobile-device body {
-    overscroll-behavior: none;
+  overscroll-behavior: none;
 }
 
 .mobile-device .game-container {
-    touch-action: none;
-    -webkit-overflow-scrolling: none;
-    overflow: hidden;
-    overscroll-behavior: none;
+  touch-action: none;
+  -webkit-overflow-scrolling: none;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 /* 小屏幕移动设备样式 */
 @media screen and (max-width: 520px) {
-    .container {
-        width: 300px;
-        margin: 0 auto;
-    }
+  .container {
+    width: 300px;
+    margin: 0 auto;
+  }
 
-    .previous-board-container,
-    .realtime-score-container {
-        width: 280px;
-        padding: 10px;
-    }
+  .previous-board-container,
+  .realtime-score-container {
+    width: 280px;
+    padding: 10px;
+  }
 
-    /* 小屏幕游戏容器样式 */
-    .game-container {
-        width: 280px;
-        height: 280px;
-        margin: 0 auto;
-        border-radius: 6px;
-        padding: 10px;
-        box-sizing: border-box;
-        touch-action: none;
-        -webkit-overflow-scrolling: none;
-        overflow: hidden;
-        overscroll-behavior: none;
-    }
+  /* 小屏幕游戏容器样式 */
+  .game-container {
+    width: 280px;
+    height: 280px;
+    margin: 0 auto;
+    border-radius: 6px;
+    padding: 10px;
+    box-sizing: border-box;
+    touch-action: none;
+    -webkit-overflow-scrolling: none;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
 
-    /* 小屏幕方块样式 */
-    .grid-container {
-        width: 260px;
-        height: 260px;
-    }
+  /* 小屏幕方块样式 */
+  .grid-container {
+    width: 260px;
+    height: 260px;
+  }
 
-    .grid-row {
-        margin-bottom: 10px;
-    }
+  .grid-row {
+    margin-bottom: 10px;
+  }
 
-    .grid-cell {
-        width: 55px;
-        height: 55px;
-        margin-right: 10px;
-        border-radius: 3px;
-    }
+  .grid-cell {
+    width: 55px;
+    height: 55px;
+    margin-right: 10px;
+    border-radius: 3px;
+  }
 
-    .tile-container {
-        width: 260px;
-        height: 260px;
-    }
+  .tile-container {
+    width: 260px;
+    height: 260px;
+  }
 
-    .tile {
-        width: 55px;
-        height: 55px;
-        line-height: 55px;
-    }
+  .tile {
+    width: 55px;
+    height: 55px;
+    line-height: 55px;
+  }
 
-    .tile .tile-inner {
-        width: 55px;
-        height: 55px;
-        font-size: 22px;
-        line-height: 55px;
-        border-radius: 3px;
-        box-sizing: border-box;
-    }
+  .tile .tile-inner {
+    width: 55px;
+    height: 55px;
+    font-size: 22px;
+    line-height: 55px;
+    border-radius: 3px;
+    box-sizing: border-box;
+  }
 
-    /* 小屏幕方块位置修正 */
-    .tile.tile-position-1-1 {
-        -webkit-transform: translate(0px, 0px);
-        transform: translate(0px, 0px);
-    }
+  /* 小屏幕方块位置修正 */
+  .tile.tile-position-1-1 {
+    -webkit-transform: translate(0px, 0px);
+    transform: translate(0px, 0px);
+  }
 
-    .tile.tile-position-1-2 {
-        -webkit-transform: translate(0px, 65px);
-        transform: translate(0px, 65px);
-    }
+  .tile.tile-position-1-2 {
+    -webkit-transform: translate(0px, 65px);
+    transform: translate(0px, 65px);
+  }
 
-    .tile.tile-position-1-3 {
-        -webkit-transform: translate(0px, 130px);
-        transform: translate(0px, 130px);
-    }
+  .tile.tile-position-1-3 {
+    -webkit-transform: translate(0px, 130px);
+    transform: translate(0px, 130px);
+  }
 
-    .tile.tile-position-1-4 {
-        -webkit-transform: translate(0px, 195px);
-        transform: translate(0px, 195px);
-    }
+  .tile.tile-position-1-4 {
+    -webkit-transform: translate(0px, 195px);
+    transform: translate(0px, 195px);
+  }
 
-    .tile.tile-position-2-1 {
-        -webkit-transform: translate(65px, 0px);
-        transform: translate(65px, 0px);
-    }
+  .tile.tile-position-2-1 {
+    -webkit-transform: translate(65px, 0px);
+    transform: translate(65px, 0px);
+  }
 
-    .tile.tile-position-2-2 {
-        -webkit-transform: translate(65px, 65px);
-        transform: translate(65px, 65px);
-    }
+  .tile.tile-position-2-2 {
+    -webkit-transform: translate(65px, 65px);
+    transform: translate(65px, 65px);
+  }
 
-    .tile.tile-position-2-3 {
-        -webkit-transform: translate(65px, 130px);
-        transform: translate(65px, 130px);
-    }
+  .tile.tile-position-2-3 {
+    -webkit-transform: translate(65px, 130px);
+    transform: translate(65px, 130px);
+  }
 
-    .tile.tile-position-2-4 {
-        -webkit-transform: translate(65px, 195px);
-        transform: translate(65px, 195px);
-    }
+  .tile.tile-position-2-4 {
+    -webkit-transform: translate(65px, 195px);
+    transform: translate(65px, 195px);
+  }
 
-    .tile.tile-position-3-1 {
-        -webkit-transform: translate(130px, 0px);
-        transform: translate(130px, 0px);
-    }
+  .tile.tile-position-3-1 {
+    -webkit-transform: translate(130px, 0px);
+    transform: translate(130px, 0px);
+  }
 
-    .tile.tile-position-3-2 {
-        -webkit-transform: translate(130px, 65px);
-        transform: translate(130px, 65px);
-    }
+  .tile.tile-position-3-2 {
+    -webkit-transform: translate(130px, 65px);
+    transform: translate(130px, 65px);
+  }
 
-    .tile.tile-position-3-3 {
-        -webkit-transform: translate(130px, 130px);
-        transform: translate(130px, 130px);
-    }
+  .tile.tile-position-3-3 {
+    -webkit-transform: translate(130px, 130px);
+    transform: translate(130px, 130px);
+  }
 
-    .tile.tile-position-3-4 {
-        -webkit-transform: translate(130px, 195px);
-        transform: translate(130px, 195px);
-    }
+  .tile.tile-position-3-4 {
+    -webkit-transform: translate(130px, 195px);
+    transform: translate(130px, 195px);
+  }
 
-    .tile.tile-position-4-1 {
-        -webkit-transform: translate(195px, 0px);
-        transform: translate(195px, 0px);
-    }
+  .tile.tile-position-4-1 {
+    -webkit-transform: translate(195px, 0px);
+    transform: translate(195px, 0px);
+  }
 
-    .tile.tile-position-4-2 {
-        -webkit-transform: translate(195px, 65px);
-        transform: translate(195px, 65px);
-    }
+  .tile.tile-position-4-2 {
+    -webkit-transform: translate(195px, 65px);
+    transform: translate(195px, 65px);
+  }
 
-    .tile.tile-position-4-3 {
-        -webkit-transform: translate(195px, 130px);
-        transform: translate(195px, 130px);
-    }
+  .tile.tile-position-4-3 {
+    -webkit-transform: translate(195px, 130px);
+    transform: translate(195px, 130px);
+  }
 
-    .tile.tile-position-4-4 {
-        -webkit-transform: translate(195px, 195px);
-        transform: translate(195px, 195px);
-    }
+  .tile.tile-position-4-4 {
+    -webkit-transform: translate(195px, 195px);
+    transform: translate(195px, 195px);
+  }
 
-    /* 超小屏幕字体大小调整 */
-    .tile.tile-128 .tile-inner,
-    .tile.tile-256 .tile-inner,
-    .tile.tile-512 .tile-inner {
-        font-size: 18px;
-    }
+  /* 超小屏幕字体大小调整 */
+  .tile.tile-128 .tile-inner,
+  .tile.tile-256 .tile-inner,
+  .tile.tile-512 .tile-inner {
+    font-size: 18px;
+  }
 
-    .tile.tile-1024 .tile-inner,
-    .tile.tile-2048 .tile-inner {
-        font-size: 16px;
-    }
+  .tile.tile-1024 .tile-inner,
+  .tile.tile-2048 .tile-inner {
+    font-size: 16px;
+  }
 
-    .game-message p {
-        font-size: 24px !important;
-        margin-top: 25px !important;
-    }
+  .game-message p {
+    font-size: 24px !important;
+    margin-top: 25px !important;
+  }
 
-    /* 紧凑按钮组样式 */
-    .btn-group {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
+  /* 紧凑按钮组样式 */
+  .btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 
-    .btn-group a {
-        margin: 3px;
-        font-size: 12px;
-        padding: 0 8px;
-    }
+  .btn-group a {
+    margin: 3px;
+    font-size: 12px;
+    padding: 0 8px;
+  }
 }
 
 /* 超小屏幕移动设备样式 */
 @media screen and (max-width: 320px) {
-    .container {
-        width: 280px;
-        margin: 0 auto;
-    }
+  .container {
+    width: 280px;
+    margin: 0 auto;
+  }
 
-    .game-container {
-        width: 260px;
-        height: 260px;
-        padding: 5px;
-        touch-action: none;
-        -webkit-overflow-scrolling: none;
-        overflow: hidden;
-        overscroll-behavior: none;
-    }
+  .game-container {
+    width: 260px;
+    height: 260px;
+    padding: 5px;
+    touch-action: none;
+    -webkit-overflow-scrolling: none;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
 
-    .grid-container {
-        width: 250px;
-        height: 250px;
-    }
+  .grid-container {
+    width: 250px;
+    height: 250px;
+  }
 
-    .grid-row {
-        margin-bottom: 6px;
-    }
+  .grid-row {
+    margin-bottom: 6px;
+  }
 
-    .grid-cell {
-        width: 53px;
-        height: 53px;
-        margin-right: 6px;
-    }
+  .grid-cell {
+    width: 53px;
+    height: 53px;
+    margin-right: 6px;
+  }
 
-    .tile-container {
-        width: 250px;
-        height: 250px;
-    }
+  .tile-container {
+    width: 250px;
+    height: 250px;
+  }
 
-    .tile {
-        width: 53px;
-        height: 53px;
-        line-height: 53px;
-    }
+  .tile {
+    width: 53px;
+    height: 53px;
+    line-height: 53px;
+  }
 
-    .tile .tile-inner {
-        width: 53px;
-        height: 53px;
-        font-size: 22px;
-        line-height: 53px;
-        border-radius: 3px;
-        box-sizing: border-box;
-    }
+  .tile .tile-inner {
+    width: 53px;
+    height: 53px;
+    font-size: 22px;
+    line-height: 53px;
+    border-radius: 3px;
+    box-sizing: border-box;
+  }
 
-    .tile.tile-128 .tile-inner,
-    .tile.tile-256 .tile-inner,
-    .tile.tile-512 .tile-inner {
-        font-size: 18px;
-    }
+  .tile.tile-128 .tile-inner,
+  .tile.tile-256 .tile-inner,
+  .tile.tile-512 .tile-inner {
+    font-size: 18px;
+  }
 
-    .tile.tile-1024 .tile-inner,
-    .tile.tile-2048 .tile-inner {
-        font-size: 16px;
-    }
+  .tile.tile-1024 .tile-inner,
+  .tile.tile-2048 .tile-inner {
+    font-size: 16px;
+  }
 
-    /* 超小屏幕方块位置调整 */
-    .tile.tile-position-1-1 {
-        -webkit-transform: translate(0px, 0px);
-        transform: translate(0px, 0px);
-    }
+  /* 超小屏幕方块位置调整 */
+  .tile.tile-position-1-1 {
+    -webkit-transform: translate(0px, 0px);
+    transform: translate(0px, 0px);
+  }
 
-    .tile.tile-position-1-2 {
-        -webkit-transform: translate(0px, 59px);
-        transform: translate(0px, 59px);
-    }
+  .tile.tile-position-1-2 {
+    -webkit-transform: translate(0px, 59px);
+    transform: translate(0px, 59px);
+  }
 
-    .tile.tile-position-1-3 {
-        -webkit-transform: translate(0px, 118px);
-        transform: translate(0px, 118px);
-    }
+  .tile.tile-position-1-3 {
+    -webkit-transform: translate(0px, 118px);
+    transform: translate(0px, 118px);
+  }
 
-    .tile.tile-position-1-4 {
-        -webkit-transform: translate(0px, 177px);
-        transform: translate(0px, 177px);
-    }
+  .tile.tile-position-1-4 {
+    -webkit-transform: translate(0px, 177px);
+    transform: translate(0px, 177px);
+  }
 
-    .tile.tile-position-2-1 {
-        -webkit-transform: translate(59px, 0px);
-        transform: translate(59px, 0px);
-    }
+  .tile.tile-position-2-1 {
+    -webkit-transform: translate(59px, 0px);
+    transform: translate(59px, 0px);
+  }
 
-    .tile.tile-position-2-2 {
-        -webkit-transform: translate(59px, 59px);
-        transform: translate(59px, 59px);
-    }
+  .tile.tile-position-2-2 {
+    -webkit-transform: translate(59px, 59px);
+    transform: translate(59px, 59px);
+  }
 
-    .tile.tile-position-2-3 {
-        -webkit-transform: translate(59px, 118px);
-        transform: translate(59px, 118px);
-    }
+  .tile.tile-position-2-3 {
+    -webkit-transform: translate(59px, 118px);
+    transform: translate(59px, 118px);
+  }
 
-    .tile.tile-position-2-4 {
-        -webkit-transform: translate(59px, 177px);
-        transform: translate(59px, 177px);
-    }
+  .tile.tile-position-2-4 {
+    -webkit-transform: translate(59px, 177px);
+    transform: translate(59px, 177px);
+  }
 
-    .tile.tile-position-3-1 {
-        -webkit-transform: translate(118px, 0px);
-        transform: translate(118px, 0px);
-    }
+  .tile.tile-position-3-1 {
+    -webkit-transform: translate(118px, 0px);
+    transform: translate(118px, 0px);
+  }
 
-    .tile.tile-position-3-2 {
-        -webkit-transform: translate(118px, 59px);
-        transform: translate(118px, 59px);
-    }
+  .tile.tile-position-3-2 {
+    -webkit-transform: translate(118px, 59px);
+    transform: translate(118px, 59px);
+  }
 
-    .tile.tile-position-3-3 {
-        -webkit-transform: translate(118px, 118px);
-        transform: translate(118px, 118px);
-    }
+  .tile.tile-position-3-3 {
+    -webkit-transform: translate(118px, 118px);
+    transform: translate(118px, 118px);
+  }
 
-    .tile.tile-position-3-4 {
-        -webkit-transform: translate(118px, 177px);
-        transform: translate(118px, 177px);
-    }
+  .tile.tile-position-3-4 {
+    -webkit-transform: translate(118px, 177px);
+    transform: translate(118px, 177px);
+  }
 
-    .tile.tile-position-4-1 {
-        -webkit-transform: translate(177px, 0px);
-        transform: translate(177px, 0px);
-    }
+  .tile.tile-position-4-1 {
+    -webkit-transform: translate(177px, 0px);
+    transform: translate(177px, 0px);
+  }
 
-    .tile.tile-position-4-2 {
-        -webkit-transform: translate(177px, 59px);
-        transform: translate(177px, 59px);
-    }
+  .tile.tile-position-4-2 {
+    -webkit-transform: translate(177px, 59px);
+    transform: translate(177px, 59px);
+  }
 
-    .tile.tile-position-4-3 {
-        -webkit-transform: translate(177px, 118px);
-        transform: translate(177px, 118px);
-    }
+  .tile.tile-position-4-3 {
+    -webkit-transform: translate(177px, 118px);
+    transform: translate(177px, 118px);
+  }
 
-    .tile.tile-position-4-4 {
-        -webkit-transform: translate(177px, 177px);
-        transform: translate(177px, 177px);
-    }
+  .tile.tile-position-4-4 {
+    -webkit-transform: translate(177px, 177px);
+    transform: translate(177px, 177px);
+  }
 }
 
 /* 录像回放相关样式 */
 .replay-controls-buttons {
-    margin: 10px 0;
-    text-align: center;
+  margin: 10px 0;
+  text-align: center;
 }
 
 .replay-info {
-    background: rgba(238, 228, 218, 0.35);
-    padding: 15px;
-    border-radius: 6px;
-    margin-bottom: 15px;
-    color: #776e65;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    animation: ai-panel-fade-in 0.5s ease;
+  background: rgba(238, 228, 218, 0.35);
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  color: #776e65;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  animation: ai-panel-fade-in 0.5s ease;
 }
 
 .replay-header {
-    font-weight: bold;
-    text-align: center;
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: #776e65;
+  font-weight: bold;
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #776e65;
 }
 
 .replay-details {
-    font-size: 14px;
-    line-height: 1.4;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .replay-controls {
-    background: rgba(238, 228, 218, 0.35);
-    padding: 15px;
-    border-radius: 6px;
-    margin: 15px 0;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    animation: ai-panel-fade-in 0.5s ease;
+  background: rgba(238, 228, 218, 0.35);
+  padding: 15px;
+  border-radius: 6px;
+  margin: 15px 0;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  animation: ai-panel-fade-in 0.5s ease;
 }
 
 .replay-button {
-    background: #8f7a66;
-    border-radius: 3px;
-    padding: 0 15px;
-    color: white;
-    height: 35px;
-    line-height: 35px;
-    display: inline-block;
-    text-align: center;
-    margin: 0 5px 10px;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    transition: 0.2s ease;
+  background: #8f7a66;
+  border-radius: 3px;
+  padding: 0 15px;
+  color: white;
+  height: 35px;
+  line-height: 35px;
+  display: inline-block;
+  text-align: center;
+  margin: 0 5px 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: 0.2s ease;
 }
 
 .replay-button:hover {
-    background: #9f8a76;
+  background: #9f8a76;
 }
 
 .replay-progress-container {
-    margin-top: 15px;
-    width: 100%;
+  margin-top: 15px;
+  width: 100%;
 }
 
 .replay-progress-label {
-    text-align: center;
-    margin-bottom: 5px;
-    font-size: 14px;
-    color: #776e65;
+  text-align: center;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #776e65;
 }
 
 .replay-progress-bar {
-    width: 100%;
-    height: 15px;
-    background: #bbada0;
-    border-radius: 15px;
-    overflow: hidden;
+  width: 100%;
+  height: 15px;
+  background: #bbada0;
+  border-radius: 15px;
+  overflow: hidden;
 }
 
 .replay-progress-fill {
-    height: 100%;
-    background: #8f7a66;
-    width: 0%;
-    transition: width 0.3s ease;
+  height: 100%;
+  background: #8f7a66;
+  width: 0%;
+  transition: width 0.3s ease;
 }
 
 /* 移动设备适配 */
 @media screen and (max-width: 520px) {
-    .replay-button {
-        font-size: 12px;
-        padding: 0 8px;
-        margin: 0 2px 8px;
-        height: 30px;
-        line-height: 30px;
-    }
+  .replay-button {
+    font-size: 12px;
+    padding: 0 8px;
+    margin: 0 2px 8px;
+    height: 30px;
+    line-height: 30px;
+  }
 
-    .replay-info {
-        padding: 10px;
-    }
+  .replay-info {
+    padding: 10px;
+  }
 
-    .replay-header {
-        font-size: 16px;
-    }
+  .replay-header {
+    font-size: 16px;
+  }
 
-    .replay-details {
-        font-size: 12px;
-    }
+  .replay-details {
+    font-size: 12px;
+  }
 
-    .replay-controls {
-        padding: 10px;
-    }
+  .replay-controls {
+    padding: 10px;
+  }
+}
+
+/* 军衔主题样式 */
+.military-theme .tile .tile-inner {
+  padding: 2px;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* 扑克牌样式 - 角落数字 */
+.military-theme .tile .tile-inner .corner-number {
+  position: absolute;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: bold;
+}
+
+.military-theme .tile .tile-inner .corner-number.top-left {
+  top: 4px;
+  left: 4px;
+}
+
+.military-theme .tile .tile-inner .corner-number.bottom-right {
+  bottom: 4px;
+  right: 4px;
+}
+
+/* 中心军衔文字 */
+.military-theme .tile .tile-inner .rank-name {
+  display: block;
+  text-align: center;
+  font-size: 22px;
+  margin: 6px 0;
+}
+
+.military-theme .tile.tile-128 .tile-inner .rank-name,
+.military-theme .tile.tile-256 .tile-inner .rank-name,
+.military-theme .tile.tile-512 .tile-inner .rank-name,
+.military-theme .tile.tile-1024 .tile-inner .rank-name,
+.military-theme .tile.tile-2048 .tile-inner .rank-name,
+.military-theme .tile.tile-super .tile-inner .rank-name {
+  font-size: 18px;
+}
+
+/* 为更大数值调整角落数字大小 */
+.military-theme .tile.tile-128 .tile-inner .corner-number,
+.military-theme .tile.tile-256 .tile-inner .corner-number,
+.military-theme .tile.tile-512 .tile-inner .corner-number,
+.military-theme .tile.tile-1024 .tile-inner .corner-number,
+.military-theme .tile.tile-2048 .tile-inner .corner-number,
+.military-theme .tile.tile-super .tile-inner .corner-number {
+  font-size: 12px;
+}
+
+@media screen and (max-width: 520px) {
+  .military-theme .tile .tile-inner .rank-name {
+    font-size: 16px;
+    margin: 4px 0;
+  }
+
+  .military-theme .tile .tile-inner .corner-number {
+    font-size: 10px;
+  }
+
+  .military-theme .tile.tile-128 .tile-inner .rank-name,
+  .military-theme .tile.tile-256 .tile-inner .rank-name,
+  .military-theme .tile.tile-512 .tile-inner .rank-name,
+  .military-theme .tile.tile-1024 .tile-inner .rank-name,
+  .military-theme .tile.tile-2048 .tile-inner .rank-name,
+  .military-theme .tile.tile-super .tile-inner .rank-name {
+    font-size: 14px;
+  }
+
+  .military-theme .tile.tile-128 .tile-inner .corner-number,
+  .military-theme .tile.tile-256 .tile-inner .corner-number,
+  .military-theme .tile.tile-512 .tile-inner .corner-number,
+  .military-theme .tile.tile-1024 .tile-inner .corner-number,
+  .military-theme .tile.tile-2048 .tile-inner .corner-number,
+  .military-theme .tile.tile-super .tile-inner .corner-number {
+    font-size: 8px;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .military-theme .tile .tile-inner .rank-name {
+    font-size: 14px;
+    margin: 3px 0;
+  }
+
+  .military-theme .tile .tile-inner .corner-number {
+    font-size: 9px;
+  }
+
+  .military-theme .tile.tile-128 .tile-inner .rank-name,
+  .military-theme .tile.tile-256 .tile-inner .rank-name,
+  .military-theme .tile.tile-512 .tile-inner .rank-name,
+  .military-theme .tile.tile-1024 .tile-inner .rank-name,
+  .military-theme .tile.tile-2048 .tile-inner .rank-name,
+  .military-theme .tile.tile-super .tile-inner .rank-name {
+    font-size: 12px;
+  }
+
+  .military-theme .tile.tile-128 .tile-inner .corner-number,
+  .military-theme .tile.tile-256 .tile-inner .corner-number,
+  .military-theme .tile.tile-512 .tile-inner .corner-number,
+  .military-theme .tile.tile-1024 .tile-inner .corner-number,
+  .military-theme .tile.tile-2048 .tile-inner .corner-number,
+  .military-theme .tile.tile-super .tile-inner .corner-number {
+    font-size: 7px;
+  }
+}
+
+/* 修改上一步棋盘的军衔显示 */
+.military-theme .board-cell {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: normal;
+  padding: 2px;
+}
+
+.military-theme .board-cell.tile-128,
+.military-theme .board-cell.tile-256,
+.military-theme .board-cell.tile-512,
+.military-theme .board-cell.tile-1024,
+.military-theme .board-cell.tile-2048 {
+  font-size: 10px;
 }

@@ -3,6 +3,12 @@ function HTMLActuator() {
   this.scoreContainer = document.querySelector(".score-container");
   this.bestContainer = document.querySelector(".best-container");
   this.messageContainer = document.querySelector(".game-message");
+  this.previousBoardContainer = document.getElementById(
+    "previous-board-container"
+  );
+  this.realtimeScoreContainer = document.getElementById(
+    "realtime-score-container"
+  );
 
   this.score = 0;
 }
@@ -44,7 +50,6 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
         }
       }
     }
-
   });
 };
 
@@ -64,7 +69,7 @@ HTMLActuator.prototype.addTile = function (tile) {
 
   var wrapper = document.createElement("div");
   var inner = document.createElement("div");
-  var position = tile.previousPosition || { x: tile.x, y: tile.y };
+  var position = tile.previousPosition || {x: tile.x, y: tile.y};
   var positionClass = this.positionClass(position);
 
   // We can't use classlist because it somehow glitches when replacing classes
@@ -75,12 +80,24 @@ HTMLActuator.prototype.addTile = function (tile) {
   this.applyClasses(wrapper, classes);
 
   inner.classList.add("tile-inner");
-  inner.textContent = tile.value;
+
+  // 支持替换显示内容（用于军衔主题等）
+  const tileValue =
+    window.TileDisplay && window.TileDisplay.replaceTileValue
+      ? window.TileDisplay.replaceTileValue(tile.value)
+      : tile.value;
+
+  // 检查返回值是否为HTML内容
+  if (typeof tileValue === "string" && tileValue.trim().startsWith("<")) {
+    inner.innerHTML = tileValue;
+  } else {
+    inner.textContent = tileValue;
+  }
 
   if (tile.previousPosition) {
     // Make sure that the tile gets rendered in the previous position first
     window.requestAnimationFrame(function () {
-      classes[2] = self.positionClass({ x: tile.x, y: tile.y });
+      classes[2] = self.positionClass({x: tile.x, y: tile.y});
       self.applyClasses(wrapper, classes); // Update the position
     });
   } else if (tile.mergedFrom) {
@@ -108,7 +125,7 @@ HTMLActuator.prototype.applyClasses = function (element, classes) {
 };
 
 HTMLActuator.prototype.normalizePosition = function (position) {
-  return { x: position.x + 1, y: position.y + 1 };
+  return {x: position.x + 1, y: position.y + 1};
 };
 
 HTMLActuator.prototype.positionClass = function (position) {
@@ -150,3 +167,6 @@ HTMLActuator.prototype.clearMessage = function () {
   this.messageContainer.classList.remove("game-won");
   this.messageContainer.classList.remove("game-over");
 };
+
+// 导出HTMLActuator类
+export {HTMLActuator};

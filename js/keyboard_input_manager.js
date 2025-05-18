@@ -46,13 +46,13 @@ KeyboardInputManager.prototype.listen = function () {
     87: 0, // W
     68: 1, // D
     83: 2, // S
-    65: 3  // A
+    65: 3, // A
   };
 
   // Respond to direction keys
   document.addEventListener("keydown", function (event) {
-    var modifiers = event.altKey || event.ctrlKey || event.metaKey ||
-      event.shiftKey;
+    var modifiers =
+      event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
     var mapped = map[event.which];
 
     if (!modifiers) {
@@ -113,83 +113,111 @@ KeyboardInputManager.prototype.listen = function () {
   var touchStartClientX, touchStartClientY;
   var gameContainer = document.getElementsByClassName("game-container")[0];
 
-  gameContainer.addEventListener(this.eventTouchstart, function (event) {
-    if ((!window.navigator.msPointerEnabled && event.touches.length > 1) ||
-      event.targetTouches.length > 1) {
-      return; // Ignore if touching with more than 1 finger
-    }
+  gameContainer.addEventListener(
+    this.eventTouchstart,
+    function (event) {
+      if (
+        (!window.navigator.msPointerEnabled && event.touches.length > 1) ||
+        event.targetTouches.length > 1
+      ) {
+        return; // Ignore if touching with more than 1 finger
+      }
 
-    if (window.navigator.msPointerEnabled) {
-      touchStartClientX = event.pageX;
-      touchStartClientY = event.pageY;
-    } else {
-      touchStartClientX = event.touches[0].clientX;
-      touchStartClientY = event.touches[0].clientY;
-    }
+      if (window.navigator.msPointerEnabled) {
+        touchStartClientX = event.pageX;
+        touchStartClientY = event.pageY;
+      } else {
+        touchStartClientX = event.touches[0].clientX;
+        touchStartClientY = event.touches[0].clientY;
+      }
 
-    // 阻止默认行为，防止页面滚动
-    event.preventDefault();
-    event.stopPropagation();
-  }, { passive: false });
+      // 阻止默认行为，防止页面滚动
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    {passive: false}
+  );
 
-  gameContainer.addEventListener(this.eventTouchmove, function (event) {
-    // 阻止默认行为，防止页面滚动
-    event.preventDefault();
-    event.stopPropagation();
-  }, { passive: false });
+  gameContainer.addEventListener(
+    this.eventTouchmove,
+    function (event) {
+      // 阻止默认行为，防止页面滚动
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    {passive: false}
+  );
 
-  gameContainer.addEventListener(this.eventTouchend, function (event) {
-    if ((!window.navigator.msPointerEnabled && event.touches.length > 0) ||
-      event.targetTouches.length > 0) {
-      return; // Ignore if still touching with one or more fingers
-    }
+  gameContainer.addEventListener(
+    this.eventTouchend,
+    function (event) {
+      if (
+        (!window.navigator.msPointerEnabled && event.touches.length > 0) ||
+        event.targetTouches.length > 0
+      ) {
+        return; // Ignore if still touching with one or more fingers
+      }
 
-    var touchEndClientX, touchEndClientY;
+      var touchEndClientX, touchEndClientY;
 
-    if (window.navigator.msPointerEnabled) {
-      touchEndClientX = event.pageX;
-      touchEndClientY = event.pageY;
-    } else {
-      touchEndClientX = event.changedTouches[0].clientX;
-      touchEndClientY = event.changedTouches[0].clientY;
-    }
+      if (window.navigator.msPointerEnabled) {
+        touchEndClientX = event.pageX;
+        touchEndClientY = event.pageY;
+      } else {
+        touchEndClientX = event.changedTouches[0].clientX;
+        touchEndClientY = event.changedTouches[0].clientY;
+      }
 
-    var dx = touchEndClientX - touchStartClientX;
-    var absDx = Math.abs(dx);
+      var dx = touchEndClientX - touchStartClientX;
+      var absDx = Math.abs(dx);
 
-    var dy = touchEndClientY - touchStartClientY;
-    var absDy = Math.abs(dy);
+      var dy = touchEndClientY - touchStartClientY;
+      var absDy = Math.abs(dy);
 
-    if (Math.max(absDx, absDy) > 10) {
-      // (right : left) : (down : up)
-      self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
-    }
+      if (Math.max(absDx, absDy) > 10) {
+        // (right : left) : (down : up)
+        self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : dy > 0 ? 2 : 0);
+      }
 
-    // 阻止默认行为，防止页面滚动
-    event.preventDefault();
-    event.stopPropagation();
-  }, { passive: false });
+      // 阻止默认行为，防止页面滚动
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    {passive: false}
+  );
 
   // 监听AI事件
-  this.on("aiPlay", function () {
-    // 只处理游戏管理器的AI播放逻辑，不再触发aiPlay事件
-    this.emit("aiPlayExecute");
-  }.bind(this));
+  this.on(
+    "aiPlay",
+    function () {
+      // 只处理游戏管理器的AI播放逻辑，不再触发aiPlay事件
+      this.emit("aiPlayExecute");
+    }.bind(this)
+  );
 
-  this.on("aiStep", function () {
-    // 只处理游戏管理器的AI单步逻辑，不再触发aiStep事件
-    this.emit("aiStepExecute");
-  }.bind(this));
+  this.on(
+    "aiStep",
+    function () {
+      // 只处理游戏管理器的AI单步逻辑，不再触发aiStep事件
+      this.emit("aiStepExecute");
+    }.bind(this)
+  );
 
-  this.on("aiSimulate", function () {
-    // 只处理游戏管理器的AI模拟决策逻辑，不再触发aiSimulate事件
-    this.emit("aiSimulateExecute");
-  }.bind(this));
+  this.on(
+    "aiSimulate",
+    function () {
+      // 只处理游戏管理器的AI模拟决策逻辑，不再触发aiSimulate事件
+      this.emit("aiSimulateExecute");
+    }.bind(this)
+  );
 
-  this.on("showScore", function () {
-    // 只处理显示评分面板逻辑，不再触发showScore事件
-    this.emit("showScoreExecute");
-  }.bind(this));
+  this.on(
+    "showScore",
+    function () {
+      // 只处理显示评分面板逻辑，不再触发showScore事件
+      this.emit("showScoreExecute");
+    }.bind(this)
+  );
 };
 
 KeyboardInputManager.prototype.restart = function (event) {
@@ -272,69 +300,105 @@ KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {
   var button = document.querySelector(selector);
   if (button) {
     // 为需要确认的按钮添加确认对话框
-    if (selector === ".restart-button" ||
+    if (
+      selector === ".restart-button" ||
       selector === ".retry-button" ||
       selector === ".ai-play-button" ||
       selector === ".ai-step-button" ||
-      selector === ".export-replay-button") {
+      selector === ".export-replay-button"
+    ) {
+      button.addEventListener(
+        "click",
+        function (event) {
+          event.preventDefault();
 
-      button.addEventListener("click", function (event) {
-        event.preventDefault();
+          // 获取当前语言
+          var currentLang = window.I18n
+            ? window.I18n.getCurrentLanguage()
+            : "zh";
 
-        // 获取当前语言
-        var currentLang = window.I18n ? window.I18n.getCurrentLanguage() : "zh";
-
-        // 根据按钮类型设置确认信息
-        var confirmMessage = "";
-        if (selector === ".restart-button" || selector === ".retry-button") {
-          confirmMessage = currentLang === "zh" ? "确定要开始新游戏吗？当前游戏进度将自动保存。" : "Start a new game? Current progress will be automatically saved.";
-        } else if (selector === ".ai-play-button") {
-          // 判断AI是否正在运行
-          var aiRunning = window.gameManager && window.gameManager.aiIsRunning;
-          if (aiRunning) {
-            // 如果AI正在运行，直接停止不需要确认
-            fn.call(this, event);
-            return;
+          // 根据按钮类型设置确认信息
+          var confirmMessage = "";
+          if (selector === ".restart-button" || selector === ".retry-button") {
+            confirmMessage =
+              currentLang === "zh"
+                ? "确定要开始新游戏吗？当前游戏进度将自动保存。"
+                : "Start a new game? Current progress will be automatically saved.";
+          } else if (selector === ".ai-play-button") {
+            // 判断AI是否正在运行
+            var aiRunning =
+              window.gameManager && window.gameManager.aiIsRunning;
+            if (aiRunning) {
+              // 如果AI正在运行，直接停止不需要确认
+              fn.call(this, event);
+              return;
+            }
+            confirmMessage =
+              currentLang === "zh"
+                ? "确定要启动AI自动模式吗？"
+                : "Start AI auto mode?";
+          } else if (selector === ".ai-step-button") {
+            confirmMessage =
+              currentLang === "zh"
+                ? "确定要执行AI单步操作吗？"
+                : "Execute a single AI step?";
+          } else if (selector === ".export-replay-button") {
+            confirmMessage =
+              currentLang === "zh"
+                ? "确定要导出当前游戏录像吗？"
+                : "Export current game replay?";
           }
-          confirmMessage = currentLang === "zh" ? "确定要启动AI自动模式吗？" : "Start AI auto mode?";
-        } else if (selector === ".ai-step-button") {
-          confirmMessage = currentLang === "zh" ? "确定要执行AI单步操作吗？" : "Execute a single AI step?";
-        } else if (selector === ".export-replay-button") {
-          confirmMessage = currentLang === "zh" ? "确定要导出当前游戏录像吗？" : "Export current game replay?";
-        }
 
-        if (confirm(confirmMessage)) {
-          fn.call(this, event);
-        }
-      }.bind(this));
-
-      button.addEventListener(this.eventTouchend, function (event) {
-        // 触摸事件的处理与点击相同
-        event.preventDefault();
-
-        var currentLang = window.I18n ? window.I18n.getCurrentLanguage() : "zh";
-
-        var confirmMessage = "";
-        if (selector === ".restart-button" || selector === ".retry-button") {
-          confirmMessage = currentLang === "zh" ? "确定要开始新游戏吗？当前游戏进度将自动保存。" : "Start a new game? Current progress will be automatically saved.";
-        } else if (selector === ".ai-play-button") {
-          var aiRunning = window.gameManager && window.gameManager.aiIsRunning;
-          if (aiRunning) {
+          if (confirm(confirmMessage)) {
             fn.call(this, event);
-            return;
           }
-          confirmMessage = currentLang === "zh" ? "确定要启动AI自动模式吗？" : "Start AI auto mode?";
-        } else if (selector === ".ai-step-button") {
-          confirmMessage = currentLang === "zh" ? "确定要执行AI单步操作吗？" : "Execute a single AI step?";
-        } else if (selector === ".export-replay-button") {
-          confirmMessage = currentLang === "zh" ? "确定要导出当前游戏录像吗？" : "Export current game replay?";
-        }
+        }.bind(this)
+      );
 
-        if (confirm(confirmMessage)) {
-          fn.call(this, event);
-        }
-      }.bind(this));
+      button.addEventListener(
+        this.eventTouchend,
+        function (event) {
+          // 触摸事件的处理与点击相同
+          event.preventDefault();
 
+          var currentLang = window.I18n
+            ? window.I18n.getCurrentLanguage()
+            : "zh";
+
+          var confirmMessage = "";
+          if (selector === ".restart-button" || selector === ".retry-button") {
+            confirmMessage =
+              currentLang === "zh"
+                ? "确定要开始新游戏吗？当前游戏进度将自动保存。"
+                : "Start a new game? Current progress will be automatically saved.";
+          } else if (selector === ".ai-play-button") {
+            var aiRunning =
+              window.gameManager && window.gameManager.aiIsRunning;
+            if (aiRunning) {
+              fn.call(this, event);
+              return;
+            }
+            confirmMessage =
+              currentLang === "zh"
+                ? "确定要启动AI自动模式吗？"
+                : "Start AI auto mode?";
+          } else if (selector === ".ai-step-button") {
+            confirmMessage =
+              currentLang === "zh"
+                ? "确定要执行AI单步操作吗？"
+                : "Execute a single AI step?";
+          } else if (selector === ".export-replay-button") {
+            confirmMessage =
+              currentLang === "zh"
+                ? "确定要导出当前游戏录像吗？"
+                : "Export current game replay?";
+          }
+
+          if (confirm(confirmMessage)) {
+            fn.call(this, event);
+          }
+        }.bind(this)
+      );
     } else {
       // 其他按钮保持原样
       button.addEventListener("click", fn.bind(this));
@@ -342,3 +406,6 @@ KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {
     }
   }
 };
+
+// 导出KeyboardInputManager类
+export {KeyboardInputManager};

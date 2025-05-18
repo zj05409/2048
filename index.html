@@ -1,334 +1,503 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>2048</title>
+  <head>
+    <meta charset="utf-8" />
+    <title>2048</title>
 
-  <link href="style/main.css" rel="stylesheet" type="text/css">
-  <link rel="shortcut icon" href="favicon.ico">
-  <link rel="apple-touch-icon" href="meta/apple-touch-icon.png">
-  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone 5+ -->
-  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x920.png"  media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone, retina -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="style/main.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="./favicon.ico" />
+    <link rel="apple-touch-icon" href="./meta/apple-touch-icon.png" />
+    <link
+      rel="apple-touch-startup-image"
+      href="./meta/apple-touch-startup-image-640x1096.png"
+      media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
+    />
+    <!-- iPhone 5+ -->
+    <link
+      rel="apple-touch-startup-image"
+      href="./meta/apple-touch-startup-image-640x920.png"
+      media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)"
+    />
+    <!-- iPhone, retina -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- 自定义样式，覆盖默认样式 -->
-  <link href="style/custom.css" rel="stylesheet" type="text/css">
-  
-  <!-- 移动设备方块大小修正 -->
-  <style type="text/css">
-    @media screen and (max-width: 520px) {
-      .container {
-        width: 300px;
-        margin: 0 auto;
-      }
-      
-      .game-container {
-        width: 280px;
-        height: 280px;
-        margin: 0 auto;
-        padding: 10px;
-      }
-      
-      .grid-container {
-        width: 260px;
-        height: 260px;
-      }
-      
-      .grid-row {
-        margin-bottom: 10px;
-      }
-      
-      .grid-cell {
-        width: 55px;
-        height: 55px;
-        margin-right: 10px;
-        border-radius: 3px;
-      }
-      
-      .tile-container {
-        width: 260px;
-        height: 260px;
-      }
-      
-      .tile {
-        width: 55px;
-        height: 55px;
-        line-height: 55px;
-      }
-      
-      .tile .tile-inner {
-        width: 55px;
-        height: 55px;
-        font-size: 22px;
-        line-height: 55px;
-        border-radius: 3px;
-        box-sizing: border-box;
-      }
-      
-      .tile.tile-128 .tile-inner,
-      .tile.tile-256 .tile-inner,
-      .tile.tile-512 .tile-inner {
-        font-size: 18px;
-      }
-      
-      .tile.tile-1024 .tile-inner,
-      .tile.tile-2048 .tile-inner {
-        font-size: 16px;
-      }
-      
-      .tile.tile-position-1-1 { -webkit-transform: translate(0px, 0px); transform: translate(0px, 0px); }
-      .tile.tile-position-1-2 { -webkit-transform: translate(0px, 65px); transform: translate(0px, 65px); }
-      .tile.tile-position-1-3 { -webkit-transform: translate(0px, 130px); transform: translate(0px, 130px); }
-      .tile.tile-position-1-4 { -webkit-transform: translate(0px, 195px); transform: translate(0px, 195px); }
-      
-      .tile.tile-position-2-1 { -webkit-transform: translate(65px, 0px); transform: translate(65px, 0px); }
-      .tile.tile-position-2-2 { -webkit-transform: translate(65px, 65px); transform: translate(65px, 65px); }
-      .tile.tile-position-2-3 { -webkit-transform: translate(65px, 130px); transform: translate(65px, 130px); }
-      .tile.tile-position-2-4 { -webkit-transform: translate(65px, 195px); transform: translate(65px, 195px); }
-      
-      .tile.tile-position-3-1 { -webkit-transform: translate(130px, 0px); transform: translate(130px, 0px); }
-      .tile.tile-position-3-2 { -webkit-transform: translate(130px, 65px); transform: translate(130px, 65px); }
-      .tile.tile-position-3-3 { -webkit-transform: translate(130px, 130px); transform: translate(130px, 130px); }
-      .tile.tile-position-3-4 { -webkit-transform: translate(130px, 195px); transform: translate(130px, 195px); }
-      
-      .tile.tile-position-4-1 { -webkit-transform: translate(195px, 0px); transform: translate(195px, 0px); }
-      .tile.tile-position-4-2 { -webkit-transform: translate(195px, 65px); transform: translate(195px, 65px); }
-      .tile.tile-position-4-3 { -webkit-transform: translate(195px, 130px); transform: translate(195px, 130px); }
-      .tile.tile-position-4-4 { -webkit-transform: translate(195px, 195px); transform: translate(195px, 195px); }
-    }
-    
-    @media screen and (max-width: 320px) {
-      .container {
-        width: 280px;
-        margin: 0 auto;
-      }
-      
-      .game-container {
-        width: 260px;
-        height: 260px;
-        padding: 5px;
-      }
-      
-      .grid-container {
-        width: 250px;
-        height: 250px;
-      }
-      
-      .grid-row {
-        margin-bottom: 6px;
-      }
-      
-      .grid-cell {
-        width: 53px;
-        height: 53px;
-        margin-right: 6px;
-      }
-      
-      .tile-container {
-        width: 250px;
-        height: 250px;
-      }
-      
-      .tile {
-        width: 53px;
-        height: 53px;
-        line-height: 53px;
-      }
-      
-      .tile .tile-inner {
-        width: 53px;
-        height: 53px;
-        font-size: 22px;
-        line-height: 53px;
-        border-radius: 3px;
-        box-sizing: border-box;
-      }
-      
-      .tile.tile-128 .tile-inner,
-      .tile.tile-256 .tile-inner,
-      .tile.tile-512 .tile-inner {
-        font-size: 18px;
-      }
-      
-      .tile.tile-1024 .tile-inner,
-      .tile.tile-2048 .tile-inner {
-        font-size: 16px;
-      }
-      
-      .tile.tile-position-1-1 { -webkit-transform: translate(0px, 0px); transform: translate(0px, 0px); }
-      .tile.tile-position-1-2 { -webkit-transform: translate(0px, 59px); transform: translate(0px, 59px); }
-      .tile.tile-position-1-3 { -webkit-transform: translate(0px, 118px); transform: translate(0px, 118px); }
-      .tile.tile-position-1-4 { -webkit-transform: translate(0px, 177px); transform: translate(0px, 177px); }
-      
-      .tile.tile-position-2-1 { -webkit-transform: translate(59px, 0px); transform: translate(59px, 0px); }
-      .tile.tile-position-2-2 { -webkit-transform: translate(59px, 59px); transform: translate(59px, 59px); }
-      .tile.tile-position-2-3 { -webkit-transform: translate(59px, 118px); transform: translate(59px, 118px); }
-      .tile.tile-position-2-4 { -webkit-transform: translate(59px, 177px); transform: translate(59px, 177px); }
-      
-      .tile.tile-position-3-1 { -webkit-transform: translate(118px, 0px); transform: translate(118px, 0px); }
-      .tile.tile-position-3-2 { -webkit-transform: translate(118px, 59px); transform: translate(118px, 59px); }
-      .tile.tile-position-3-3 { -webkit-transform: translate(118px, 118px); transform: translate(118px, 118px); }
-      .tile.tile-position-3-4 { -webkit-transform: translate(118px, 177px); transform: translate(118px, 177px); }
-      
-      .tile.tile-position-4-1 { -webkit-transform: translate(177px, 0px); transform: translate(177px, 0px); }
-      .tile.tile-position-4-2 { -webkit-transform: translate(177px, 59px); transform: translate(177px, 59px); }
-      .tile.tile-position-4-3 { -webkit-transform: translate(177px, 118px); transform: translate(177px, 118px); }
-      .tile.tile-position-4-4 { -webkit-transform: translate(177px, 177px); transform: translate(177px, 177px); }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="heading">
-      <h1 class="title">2048</h1>
-      <div class="scores-container">
-        <div class="score-container">0</div>
-        <div class="best-container">0</div>
-      </div>
-    </div>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="320" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <div class="language-selector">
-      <a class="lang-button" data-lang="en">English</a>
-      <a class="lang-button active" data-lang="zh">中文</a>
-    </div>
+    <!-- 自定义样式，覆盖默认样式 -->
+    <link href="style/custom.css" rel="stylesheet" type="text/css" />
 
-    <div class="above-game">
-      <p class="game-intro"><span data-i18n="join">将数字合并以得到</span> <strong>2048</strong> <span data-i18n="tile">方块!</span></p>
-      <div class="btn-group">
-        <a class="restart-button"><span data-i18n="new_game">新游戏</span></a>
-        <a class="undo-button"><span data-i18n="undo">撤销</span></a>
-        <a class="save-button"><span data-i18n="save">存档</span></a>
-        <a class="load-button"><span data-i18n="load">读档</span></a>
-      </div>
-    </div>
+    <!-- 移动设备方块大小修正 -->
+    <style type="text/css">
+      @media screen and (max-width: 520px) {
+        .container {
+          width: 300px;
+          margin: 0 auto;
+        }
 
-    <div class="game-layout-container">
-      <div id="previous-board-container" class="previous-board-container"></div>
-      <div id="realtime-score-container" class="realtime-score-container"></div>
-      
-      <div class="game-container">
-        <div class="game-message">
-          <p></p>
-          <div class="lower">
-            <a class="keep-playing-button"><span data-i18n="keep_going">继续游戏</span></a>
-            <a class="retry-button"><span data-i18n="try_again">再试一次</span></a>
-          </div>
+        .game-container {
+          width: 280px;
+          height: 280px;
+          margin: 0 auto;
+          padding: 10px;
+        }
+
+        .grid-container {
+          width: 260px;
+          height: 260px;
+        }
+
+        .grid-row {
+          margin-bottom: 10px;
+        }
+
+        .grid-cell {
+          width: 55px;
+          height: 55px;
+          margin-right: 10px;
+          border-radius: 3px;
+        }
+
+        .tile-container {
+          width: 260px;
+          height: 260px;
+        }
+
+        .tile {
+          width: 55px;
+          height: 55px;
+          line-height: 55px;
+        }
+
+        .tile .tile-inner {
+          width: 55px;
+          height: 55px;
+          font-size: 22px;
+          line-height: 55px;
+          border-radius: 3px;
+          box-sizing: border-box;
+        }
+
+        .tile.tile-128 .tile-inner,
+        .tile.tile-256 .tile-inner,
+        .tile.tile-512 .tile-inner {
+          font-size: 18px;
+        }
+
+        .tile.tile-1024 .tile-inner,
+        .tile.tile-2048 .tile-inner {
+          font-size: 16px;
+        }
+
+        .tile.tile-position-1-1 {
+          -webkit-transform: translate(0px, 0px);
+          transform: translate(0px, 0px);
+        }
+        .tile.tile-position-1-2 {
+          -webkit-transform: translate(0px, 65px);
+          transform: translate(0px, 65px);
+        }
+        .tile.tile-position-1-3 {
+          -webkit-transform: translate(0px, 130px);
+          transform: translate(0px, 130px);
+        }
+        .tile.tile-position-1-4 {
+          -webkit-transform: translate(0px, 195px);
+          transform: translate(0px, 195px);
+        }
+
+        .tile.tile-position-2-1 {
+          -webkit-transform: translate(65px, 0px);
+          transform: translate(65px, 0px);
+        }
+        .tile.tile-position-2-2 {
+          -webkit-transform: translate(65px, 65px);
+          transform: translate(65px, 65px);
+        }
+        .tile.tile-position-2-3 {
+          -webkit-transform: translate(65px, 130px);
+          transform: translate(65px, 130px);
+        }
+        .tile.tile-position-2-4 {
+          -webkit-transform: translate(65px, 195px);
+          transform: translate(65px, 195px);
+        }
+
+        .tile.tile-position-3-1 {
+          -webkit-transform: translate(130px, 0px);
+          transform: translate(130px, 0px);
+        }
+        .tile.tile-position-3-2 {
+          -webkit-transform: translate(130px, 65px);
+          transform: translate(130px, 65px);
+        }
+        .tile.tile-position-3-3 {
+          -webkit-transform: translate(130px, 130px);
+          transform: translate(130px, 130px);
+        }
+        .tile.tile-position-3-4 {
+          -webkit-transform: translate(130px, 195px);
+          transform: translate(130px, 195px);
+        }
+
+        .tile.tile-position-4-1 {
+          -webkit-transform: translate(195px, 0px);
+          transform: translate(195px, 0px);
+        }
+        .tile.tile-position-4-2 {
+          -webkit-transform: translate(195px, 65px);
+          transform: translate(195px, 65px);
+        }
+        .tile.tile-position-4-3 {
+          -webkit-transform: translate(195px, 130px);
+          transform: translate(195px, 130px);
+        }
+        .tile.tile-position-4-4 {
+          -webkit-transform: translate(195px, 195px);
+          transform: translate(195px, 195px);
+        }
+      }
+
+      @media screen and (max-width: 320px) {
+        .container {
+          width: 280px;
+          margin: 0 auto;
+        }
+
+        .game-container {
+          width: 260px;
+          height: 260px;
+          padding: 5px;
+        }
+
+        .grid-container {
+          width: 250px;
+          height: 250px;
+        }
+
+        .grid-row {
+          margin-bottom: 6px;
+        }
+
+        .grid-cell {
+          width: 53px;
+          height: 53px;
+          margin-right: 6px;
+        }
+
+        .tile-container {
+          width: 250px;
+          height: 250px;
+        }
+
+        .tile {
+          width: 53px;
+          height: 53px;
+          line-height: 53px;
+        }
+
+        .tile .tile-inner {
+          width: 53px;
+          height: 53px;
+          font-size: 22px;
+          line-height: 53px;
+          border-radius: 3px;
+          box-sizing: border-box;
+        }
+
+        .tile.tile-128 .tile-inner,
+        .tile.tile-256 .tile-inner,
+        .tile.tile-512 .tile-inner {
+          font-size: 18px;
+        }
+
+        .tile.tile-1024 .tile-inner,
+        .tile.tile-2048 .tile-inner {
+          font-size: 16px;
+        }
+
+        .tile.tile-position-1-1 {
+          -webkit-transform: translate(0px, 0px);
+          transform: translate(0px, 0px);
+        }
+        .tile.tile-position-1-2 {
+          -webkit-transform: translate(0px, 59px);
+          transform: translate(0px, 59px);
+        }
+        .tile.tile-position-1-3 {
+          -webkit-transform: translate(0px, 118px);
+          transform: translate(0px, 118px);
+        }
+        .tile.tile-position-1-4 {
+          -webkit-transform: translate(0px, 177px);
+          transform: translate(0px, 177px);
+        }
+
+        .tile.tile-position-2-1 {
+          -webkit-transform: translate(59px, 0px);
+          transform: translate(59px, 0px);
+        }
+        .tile.tile-position-2-2 {
+          -webkit-transform: translate(59px, 59px);
+          transform: translate(59px, 59px);
+        }
+        .tile.tile-position-2-3 {
+          -webkit-transform: translate(59px, 118px);
+          transform: translate(59px, 118px);
+        }
+        .tile.tile-position-2-4 {
+          -webkit-transform: translate(59px, 177px);
+          transform: translate(59px, 177px);
+        }
+
+        .tile.tile-position-3-1 {
+          -webkit-transform: translate(118px, 0px);
+          transform: translate(118px, 0px);
+        }
+        .tile.tile-position-3-2 {
+          -webkit-transform: translate(118px, 59px);
+          transform: translate(118px, 59px);
+        }
+        .tile.tile-position-3-3 {
+          -webkit-transform: translate(118px, 118px);
+          transform: translate(118px, 118px);
+        }
+        .tile.tile-position-3-4 {
+          -webkit-transform: translate(118px, 177px);
+          transform: translate(118px, 177px);
+        }
+
+        .tile.tile-position-4-1 {
+          -webkit-transform: translate(177px, 0px);
+          transform: translate(177px, 0px);
+        }
+        .tile.tile-position-4-2 {
+          -webkit-transform: translate(177px, 59px);
+          transform: translate(177px, 59px);
+        }
+        .tile.tile-position-4-3 {
+          -webkit-transform: translate(177px, 118px);
+          transform: translate(177px, 118px);
+        }
+        .tile.tile-position-4-4 {
+          -webkit-transform: translate(177px, 177px);
+          transform: translate(177px, 177px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="heading">
+        <h1 class="title">2048</h1>
+        <div class="scores-container">
+          <div class="score-container">0</div>
+          <div class="best-container">0</div>
         </div>
+      </div>
 
-        <div class="grid-container">
-          <div class="grid-row">
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-          </div>
-          <div class="grid-row">
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-          </div>
-          <div class="grid-row">
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-          </div>
-          <div class="grid-row">
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-          </div>
-        </div>
+      <div class="language-selector">
+        <a class="lang-button" data-lang="en">English</a>
+        <a class="lang-button active" data-lang="zh">中文</a>
+      </div>
 
-        <div class="tile-container">
-
+      <div class="above-game">
+        <p class="game-intro">
+          <span data-i18n="join">将数字合并以得到</span> <strong>2048</strong>
+          <span data-i18n="tile">方块!</span>
+        </p>
+        <div class="btn-group">
+          <a class="restart-button"><span data-i18n="new_game">新游戏</span></a>
+          <a class="undo-button"><span data-i18n="undo">撤销</span></a>
+          <a class="save-button"><span data-i18n="save">存档</span></a>
+          <a class="load-button"><span data-i18n="load">读档</span></a>
         </div>
       </div>
-    </div>
 
-    <div class="ai-controls">
-      <div class="btn-group">
-        <a class="ai-play-button"><span data-i18n="ai_play">AI自动</span></a>
-        <a class="ai-step-button"><span data-i18n="ai_step">AI单步</span></a>
-        <a class="ai-simulate-button"><span data-i18n="ai_simulate">AI模拟决策</span></a>
-        <a class="show-score-button"><span data-i18n="show_score">显示评分</span></a>
+      <div class="game-layout-container">
+        <div
+          id="previous-board-container"
+          class="previous-board-container"
+        ></div>
+        <div
+          id="realtime-score-container"
+          class="realtime-score-container"
+        ></div>
+
+        <div class="game-container">
+          <div class="game-message">
+            <p></p>
+            <div class="lower">
+              <a class="keep-playing-button"
+                ><span data-i18n="keep_going">继续游戏</span></a
+              >
+              <a class="retry-button"
+                ><span data-i18n="try_again">再试一次</span></a
+              >
+            </div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-row">
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+              <div class="grid-cell"></div>
+            </div>
+          </div>
+
+          <div class="tile-container"></div>
+        </div>
       </div>
-    </div>
 
-    <div class="replay-controls-buttons">
-      <div class="btn-group">
-        <a class="export-replay-button"><span data-i18n="export_replay">导出录像</span></a>
-        <a class="import-replay-button"><span data-i18n="import_replay">导入录像</span></a>
+      <div class="ai-controls">
+        <div class="btn-group">
+          <a class="ai-play-button"><span data-i18n="ai_play">AI自动</span></a>
+          <a class="ai-step-button"><span data-i18n="ai_step">AI单步</span></a>
+          <a class="ai-simulate-button"
+            ><span data-i18n="ai_simulate">AI模拟决策</span></a
+          >
+          <a class="show-score-button"
+            ><span data-i18n="show_score">显示评分</span></a
+          >
+        </div>
       </div>
+
+      <div class="replay-controls-buttons">
+        <div class="btn-group">
+          <a class="export-replay-button"
+            ><span data-i18n="export_replay">导出录像</span></a
+          >
+          <a class="import-replay-button"
+            ><span data-i18n="import_replay">导入录像</span></a
+          >
+        </div>
+      </div>
+
+      <p class="game-explanation">
+        <strong class="important"
+          ><span data-i18n="how_to_play">玩法说明:</span></strong
+        >
+        <span data-i18n="use_arrow">使用</span>
+        <strong><span data-i18n="arrow_keys">方向键</span></strong>
+        <span data-i18n="to_move"
+          >移动方块。当两个相同数字的方块相撞时，它们将</span
+        >
+        <strong><span data-i18n="merge">合并成一个!</span></strong>
+      </p>
+      <hr />
+      <p>
+        <span data-i18n="note">备注:</span>
+        <span data-i18n="official">这是2048的官方版本。您可以通过</span>
+        <a href="http://git.io/2048">http://git.io/2048</a>
+        <span data-i18n="phone"
+          >在手机上玩。所有其他应用或网站都是衍生品或假冒品，使用时请谨慎。</span
+        >
+      </p>
+      <hr />
+      <p>
+        <span data-i18n="created_by">创建者</span>
+        <a href="http://gabrielecirulli.com" target="_blank"
+          >Gabriele Cirulli.</a
+        >
+        <span data-i18n="based_on">基于</span>
+        <a
+          href="https://itunes.apple.com/us/app/1024!/id823499224"
+          target="_blank"
+          >1024 by Veewo Studio</a
+        >
+        <span data-i18n="and">以及在概念上类似于</span>
+        <a href="http://asherv.com/threes/" target="_blank"
+          >Threes by Asher Vollmer.</a
+        >
+      </p>
     </div>
 
-    <p class="game-explanation">
-      <strong class="important"><span data-i18n="how_to_play">玩法说明:</span></strong> <span data-i18n="use_arrow">使用</span> <strong><span data-i18n="arrow_keys">方向键</span></strong> <span data-i18n="to_move">移动方块。当两个相同数字的方块相撞时，它们将</span> <strong><span data-i18n="merge">合并成一个!</span></strong>
-    </p>
-    <hr>
-    <p>
-    <span data-i18n="note">备注:</span> <span data-i18n="official">这是2048的官方版本。您可以通过</span> <a href="http://git.io/2048">http://git.io/2048</a> <span data-i18n="phone">在手机上玩。所有其他应用或网站都是衍生品或假冒品，使用时请谨慎。</span>
-    </p>
-    <hr>
-    <p>
-    <span data-i18n="created_by">创建者</span> <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a> <span data-i18n="based_on">基于</span> <a href="https://itunes.apple.com/us/app/1024!/id823499224" target="_blank">1024 by Veewo Studio</a> <span data-i18n="and">以及在概念上类似于</span> <a href="http://asherv.com/threes/" target="_blank">Threes by Asher Vollmer.</a>
-    </p>
-  </div>
+    <script type="module">
+      // 导入所有必要的模块
+      import "./js/bind_polyfill.js";
+      import "./js/classlist_polyfill.js";
+      import "./js/animframe_polyfill.js";
+      import {KeyboardInputManager} from "./js/keyboard_input_manager.js";
+      import {HTMLActuator} from "./js/html_actuator.js";
+      import {Grid} from "./js/grid.js";
+      import {Tile} from "./js/tile.js";
+      import {LocalStorageManager} from "./js/local_storage_manager.js";
+      import "./js/i18n.js";
+      import {GameManager} from "./js/game_manager.js";
+      import "./js/application.js";
+      import "./2048ai.js";
+      import "./js/tile_display.js";
 
-  <script src="js/bind_polyfill.js"></script>
-  <script src="js/classlist_polyfill.js"></script>
-  <script src="js/animframe_polyfill.js"></script>
-  <script src="js/keyboard_input_manager.js"></script>
-  <script src="js/html_actuator.js"></script>
-  <script src="js/grid.js"></script>
-  <script src="js/tile.js"></script>
-  <script src="js/local_storage_manager.js"></script>
-  <script src="js/i18n.js"></script>
-  <script src="js/game_manager.js"></script>
-  <script src="js/application.js"></script>
-  <script src="2048ai.js"></script>
-  
-  <!-- 阻止移动端页面滚动的脚本 -->
-  <script>
-    // 等待DOM加载完成
-    document.addEventListener('DOMContentLoaded', function() {
-      // 获取游戏容器
-      var gameContainer = document.querySelector('.game-container');
-      
-      if (gameContainer) {
-        // 阻止游戏容器内的触摸事件引起页面滚动
-        gameContainer.addEventListener('touchstart', function(e) {
-          e.stopPropagation();
-        }, {passive: false});
-        
-        gameContainer.addEventListener('touchmove', function(e) {
-          e.stopPropagation();
-          e.preventDefault();
-        }, {passive: false});
-        
-        gameContainer.addEventListener('touchend', function(e) {
-          e.stopPropagation();
-        }, {passive: false});
-      }
-      
-      // 针对iOS设备
-      if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        // 防止iOS橡皮筋效果
-        document.addEventListener('touchmove', function(e) {
-          // 检查是否在游戏容器内的触摸事件
-          if (e.target.closest('.game-container')) {
-            e.preventDefault();
-          }
-        }, {passive: false});
-      }
-    });
-  </script>
-</body>
+      // 等待DOM加载完成
+      document.addEventListener("DOMContentLoaded", function () {
+        // 获取游戏容器
+        var gameContainer = document.querySelector(".game-container");
+
+        if (gameContainer) {
+          // 阻止游戏容器内的触摸事件引起页面滚动
+          gameContainer.addEventListener(
+            "touchstart",
+            function (e) {
+              e.stopPropagation();
+            },
+            {passive: false}
+          );
+
+          gameContainer.addEventListener(
+            "touchmove",
+            function (e) {
+              e.stopPropagation();
+              e.preventDefault();
+            },
+            {passive: false}
+          );
+
+          gameContainer.addEventListener(
+            "touchend",
+            function (e) {
+              e.stopPropagation();
+            },
+            {passive: false}
+          );
+        }
+
+        // 针对iOS设备
+        if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+          // 防止iOS橡皮筋效果
+          document.addEventListener(
+            "touchmove",
+            function (e) {
+              // 检查是否在游戏容器内的触摸事件
+              if (e.target.closest(".game-container")) {
+                e.preventDefault();
+              }
+            },
+            {passive: false}
+          );
+        }
+      });
+    </script>
+  </body>
 </html>

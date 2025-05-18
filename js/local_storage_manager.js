@@ -2,11 +2,11 @@ window.fakeStorage = {
   _data: {},
 
   setItem: function (id, val) {
-    return this._data[id] = String(val);
+    return (this._data[id] = String(val));
   },
 
   getItem: function (id) {
-    return this._data.hasOwnProperty(id) ? this._data[id] : undefined;
+    return this._data.hasOwnProperty(id) ? this._data[id] : null;
   },
 
   removeItem: function (id) {
@@ -14,8 +14,8 @@ window.fakeStorage = {
   },
 
   clear: function () {
-    return this._data = {};
-  }
+    return (this._data = {});
+  },
 };
 
 function LocalStorageManager() {
@@ -91,7 +91,7 @@ LocalStorageManager.prototype.saveGameWithName = function (gameState, name) {
       name: name,
       state: gameState,
       timestamp: timestamp,
-      maxScore: maxScore
+      maxScore: maxScore,
     };
   } else {
     // 否则添加新存档
@@ -100,7 +100,7 @@ LocalStorageManager.prototype.saveGameWithName = function (gameState, name) {
       name: name,
       state: gameState,
       timestamp: timestamp,
-      maxScore: maxScore
+      maxScore: maxScore,
     };
 
     // 如果超过最大存档数量，则删除最旧的存档
@@ -171,3 +171,6 @@ LocalStorageManager.prototype.getMaxScoreFromState = function (gameState) {
 
   return maxTile;
 };
+
+// 导出LocalStorageManager类
+export {LocalStorageManager};
