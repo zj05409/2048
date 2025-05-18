@@ -42,11 +42,33 @@ const familyRanks = {
   131072: "神祖",
 };
 
+// 后宫主题配置
+const haremRanks = {
+  2: "侍女",
+  4: "宫女",
+  8: "才女",
+  16: "美姬",
+  32: "贵妃",
+  64: "皇妃",
+  128: "皇后",
+  256: "太后",
+  512: "女王",
+  1024: "女帝",
+  2048: "天后",
+  4096: "星后",
+  8192: "银女王",
+  16384: "宇女皇",
+  32768: "时空后",
+  65536: "维度后",
+  131072: "宇主宰",
+};
+
 // 主题类型
 const ThemeType = {
   NUMBER: "number", // 数字模式
   MILITARY: "military", // 军衔模式
   FAMILY: "family", // 辈分模式
+  HAREM: "harem", // 后宫模式
 };
 
 // 主题数据
@@ -65,6 +87,11 @@ const themes = {
     displayName: "辈分模式",
     cssClass: "military-theme family-theme", // 复用military-theme的样式
     data: familyRanks,
+  },
+  [ThemeType.HAREM]: {
+    displayName: "后宫模式",
+    cssClass: "military-theme harem-theme", // 复用military-theme的样式结构
+    data: haremRanks,
   },
 };
 
@@ -342,6 +369,20 @@ function init() {
     .family-theme .tile-1024 .tile-inner { background: #BD3D13; }
     .family-theme .tile-2048 .tile-inner { background: #AA2808; }
     .family-theme .tile-super .tile-inner { background: #800000; }
+    
+    /* 后宫模式的特定样式 */
+    .harem-theme .tile-2 .tile-inner { background: #FFECF5; }
+    .harem-theme .tile-4 .tile-inner { background: #FFD6E9; }
+    .harem-theme .tile-8 .tile-inner { background: #FFC1DD; }
+    .harem-theme .tile-16 .tile-inner { background: #FFACD1; }
+    .harem-theme .tile-32 .tile-inner { background: #FF97C5; }
+    .harem-theme .tile-64 .tile-inner { background: #FF82B9; }
+    .harem-theme .tile-128 .tile-inner { background: #FF6EAD; color: white; }
+    .harem-theme .tile-256 .tile-inner { background: #FF59A1; color: white; }
+    .harem-theme .tile-512 .tile-inner { background: #FF4595; color: white; }
+    .harem-theme .tile-1024 .tile-inner { background: #FF3089; color: white; }
+    .harem-theme .tile-2048 .tile-inner { background: #FF1C7D; color: white; }
+    .harem-theme .tile-super .tile-inner { background: #D4006E; color: white; }
   `;
   document.head.appendChild(style);
 
