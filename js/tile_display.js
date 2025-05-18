@@ -21,26 +21,80 @@ const militaryRanks = {
   131072: "宇宙主宰",
 };
 
-// 标记是否启用军衔主题
-let militaryThemeEnabled = false;
+// 辈分主题配置
+const familyRanks = {
+  2: "曾孙",
+  4: "孙子",
+  8: "儿子",
+  16: "自己",
+  32: "父亲",
+  64: "祖父",
+  128: "曾祖",
+  256: "高祖",
+  512: "天祖",
+  1024: "烈祖",
+  2048: "太祖",
+  4096: "远祖",
+  8192: "鼻祖",
+  16384: "始祖",
+  32768: "人祖",
+  65536: "圣祖",
+  131072: "神祖",
+};
+
+// 主题类型
+const ThemeType = {
+  NUMBER: "number", // 数字模式
+  MILITARY: "military", // 军衔模式
+  FAMILY: "family", // 辈分模式
+};
+
+// 主题数据
+const themes = {
+  [ThemeType.NUMBER]: {
+    displayName: "数字模式",
+    cssClass: "",
+    data: null,
+  },
+  [ThemeType.MILITARY]: {
+    displayName: "军衔模式",
+    cssClass: "military-theme",
+    data: militaryRanks,
+  },
+  [ThemeType.FAMILY]: {
+    displayName: "辈分模式",
+    cssClass: "military-theme family-theme", // 复用military-theme的样式
+    data: familyRanks,
+  },
+};
+
+// 当前激活的主题
+let activeTheme = ThemeType.NUMBER;
 
 // 获取当前语言
 function getCurrentLanguage() {
   return window.I18n ? window.I18n.getCurrentLanguage() : "zh";
 }
 
-// 检查是否应该使用军衔主题
-function shouldUseMilitaryTheme() {
-  return militaryThemeEnabled && getCurrentLanguage() === "zh";
+// 检查是否应该使用特殊主题
+function shouldUseTheme() {
+  return activeTheme !== ThemeType.NUMBER && getCurrentLanguage() === "zh";
 }
 
-// 替换数字为军衔（仅用于显示）
+// 获取当前主题数据
+function getThemeData() {
+  return themes[activeTheme].data;
+}
+
+// 替换数字为主题名称（仅用于显示）
 function replaceTileValue(value) {
-  if (shouldUseMilitaryTheme() && militaryRanks[value]) {
+  const themeData = getThemeData();
+
+  if (shouldUseTheme() && themeData && themeData[value]) {
     // 创建扑克牌样式的HTML结构
     const html = `
       <span class="corner-number top-left">${value}</span>
-      <span class="rank-name">${militaryRanks[value]}</span>
+      <span class="rank-name">${themeData[value]}</span>
       <span class="corner-number bottom-right">${value}</span>
     `;
     return html;
@@ -48,15 +102,27 @@ function replaceTileValue(value) {
   return value;
 }
 
-// 应用或移除军衔主题样式
-function applyMilitaryTheme() {
+// 应用或移除主题样式
+function applyTheme() {
   const gameContainer = document.querySelector(".container");
   if (!gameContainer) return;
 
-  if (shouldUseMilitaryTheme()) {
-    gameContainer.classList.add("military-theme");
-  } else {
-    gameContainer.classList.remove("military-theme");
+  // 移除所有主题类
+  Object.values(themes).forEach((theme) => {
+    if (theme.cssClass) {
+      const classes = theme.cssClass.split(" ");
+      classes.forEach((cls) => {
+        if (cls) gameContainer.classList.remove(cls);
+      });
+    }
+  });
+
+  // 添加当前主题类
+  if (shouldUseTheme()) {
+    const currentThemeClasses = themes[activeTheme].cssClass.split(" ");
+    currentThemeClasses.forEach((cls) => {
+      if (cls) gameContainer.classList.add(cls);
+    });
   }
 }
 
@@ -85,7 +151,7 @@ function patchHTMLActuator() {
 
       inner.classList.add("tile-inner");
 
-      // 使用军衔替换数字（当启用军衔主题时）
+      // 使用主题替换数字（当启用特殊主题时）
       const tileContent = replaceTileValue(tile.value);
 
       // 检查是否返回的是HTML
@@ -126,7 +192,7 @@ function patchHTMLActuator() {
   }
 }
 
-// 为Board.prototype.renderBoardHTML方法添加军衔主题支持
+// 为Board.prototype.renderBoardHTML方法添加主题支持
 function patchBoardRender() {
   if (typeof Board !== "undefined" && Board.prototype.renderBoardHTML) {
     const originalRenderBoardHTML = Board.prototype.renderBoardHTML;
@@ -134,15 +200,17 @@ function patchBoardRender() {
     Board.prototype.renderBoardHTML = function () {
       let html = '<div class="board-grid">';
 
+      const themeData = getThemeData();
+
       for (let y = 0; y < 4; y++) {
         html += '<div class="board-row">';
         for (let x = 0; x < 4; x++) {
           const value = this.get(y, x);
-          // 对于历史棋盘，为了简单起见，仅显示数字和军衔，不使用扑克牌风格
+          // 对于历史棋盘，为了简单起见，仅显示数字和主题名称，不使用扑克牌风格
           let displayValue = "";
           if (value !== 0) {
-            if (shouldUseMilitaryTheme() && militaryRanks[value]) {
-              displayValue = `${value}<br>${militaryRanks[value]}`;
+            if (shouldUseTheme() && themeData && themeData[value]) {
+              displayValue = `${value}<br>${themeData[value]}`;
             } else {
               displayValue = value;
             }
@@ -161,18 +229,29 @@ function patchBoardRender() {
   }
 }
 
-// 切换军衔主题
-function toggleMilitaryTheme() {
-  militaryThemeEnabled = !militaryThemeEnabled;
+// 切换主题
+function toggleTheme() {
+  // 获取所有主题类型
+  const themeTypes = Object.keys(themes);
+
+  // 找到当前主题的索引
+  const currentIndex = themeTypes.indexOf(activeTheme);
+
+  // 切换到下一个主题（循环）
+  const nextIndex = (currentIndex + 1) % themeTypes.length;
+  activeTheme = themeTypes[nextIndex];
 
   // 保存设置
-  localStorage.setItem("militaryThemeEnabled", militaryThemeEnabled);
+  localStorage.setItem("activeTheme", activeTheme);
 
   // 应用主题
-  applyMilitaryTheme();
+  applyTheme();
 
   // 刷新游戏显示，但不重新加载页面
   refreshGameDisplay();
+
+  // 返回新主题的显示名称
+  return themes[activeTheme].displayName;
 }
 
 // 刷新游戏显示
@@ -214,10 +293,10 @@ function addThemeToggleButton() {
 
   const themeButton = document.createElement("a");
   themeButton.className = "theme-button";
-  themeButton.textContent = militaryThemeEnabled ? "数字模式" : "军衔模式";
+  themeButton.textContent = themes[activeTheme].displayName;
   themeButton.addEventListener("click", function () {
-    toggleMilitaryTheme();
-    this.textContent = militaryThemeEnabled ? "数字模式" : "军衔模式";
+    const newThemeName = toggleTheme();
+    this.textContent = newThemeName;
   });
 
   container.appendChild(themeButton);
@@ -226,8 +305,9 @@ function addThemeToggleButton() {
 // 初始化
 function init() {
   // 尝试从localStorage读取主题设置
-  if (localStorage.getItem("militaryThemeEnabled") === "true") {
-    militaryThemeEnabled = true;
+  const savedTheme = localStorage.getItem("activeTheme");
+  if (savedTheme && themes[savedTheme]) {
+    activeTheme = savedTheme;
   }
 
   // 添加CSS样式
@@ -248,6 +328,20 @@ function init() {
     .theme-button:hover {
         background: #9f8a76;
     }
+    
+    /* 辈分模式的特定样式 */
+    .family-theme .tile-2 .tile-inner { background: #F8F8D8; }
+    .family-theme .tile-4 .tile-inner { background: #F5E8B5; }
+    .family-theme .tile-8 .tile-inner { background: #F2D4A2; }
+    .family-theme .tile-16 .tile-inner { background: #F0C088; }
+    .family-theme .tile-32 .tile-inner { background: #EDAC74; }
+    .family-theme .tile-64 .tile-inner { background: #E09856; }
+    .family-theme .tile-128 .tile-inner { background: #DC8442; }
+    .family-theme .tile-256 .tile-inner { background: #D77035; }
+    .family-theme .tile-512 .tile-inner { background: #CC5C28; }
+    .family-theme .tile-1024 .tile-inner { background: #BD3D13; }
+    .family-theme .tile-2048 .tile-inner { background: #AA2808; }
+    .family-theme .tile-super .tile-inner { background: #800000; }
   `;
   document.head.appendChild(style);
 
@@ -260,8 +354,8 @@ function init() {
   // 修改Board渲染方法
   patchBoardRender();
 
-  // 应用军衔主题样式
-  applyMilitaryTheme();
+  // 应用主题样式
+  applyTheme();
 }
 
 // 监听DOM加载完成
@@ -270,20 +364,20 @@ document.addEventListener("DOMContentLoaded", init);
 // 监听语言切换
 document.addEventListener("click", function (e) {
   if (e.target.classList.contains("lang-button")) {
-    // 如果切换到英文，禁用军衔主题
+    // 如果切换到英文，设回数字模式
     if (e.target.getAttribute("data-lang") === "en") {
-      militaryThemeEnabled = false;
+      activeTheme = ThemeType.NUMBER;
 
       // 保存设置
-      localStorage.setItem("militaryThemeEnabled", militaryThemeEnabled);
+      localStorage.setItem("activeTheme", activeTheme);
 
-      // 移除军衔主题样式
-      applyMilitaryTheme();
+      // 移除主题样式
+      applyTheme();
 
       // 更新按钮文字
       const themeButton = document.querySelector(".theme-button");
       if (themeButton) {
-        themeButton.textContent = "军衔模式";
+        themeButton.textContent = themes[activeTheme].displayName;
       }
 
       // 刷新游戏显示
@@ -294,14 +388,14 @@ document.addEventListener("click", function (e) {
 
 // 导出公共接口
 export const TileDisplay = {
-  toggleMilitaryTheme,
-  isMilitaryThemeEnabled: () => militaryThemeEnabled,
+  toggleTheme,
+  getActiveTheme: () => activeTheme,
   replaceTileValue,
 };
 
 // 为了兼容非ESM环境，也暴露到全局作用域
 window.TileDisplay = {
-  toggleMilitaryTheme,
-  isMilitaryThemeEnabled: () => militaryThemeEnabled,
+  toggleTheme,
+  getActiveTheme: () => activeTheme,
   replaceTileValue,
 };
