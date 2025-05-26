@@ -109,6 +109,9 @@ KeyboardInputManager.prototype.listen = function () {
   this.bindButtonPress(".export-replay-button", this.exportReplay);
   this.bindButtonPress(".import-replay-button", this.importReplay);
 
+  // 网格单元格点击事件
+  this.bindGridCellClicks();
+
   // Respond to swipe events
   var touchStartClientX, touchStartClientY;
   var gameContainer = document.getElementsByClassName("game-container")[0];
@@ -405,6 +408,58 @@ KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {
       button.addEventListener(this.eventTouchend, fn.bind(this));
     }
   }
+};
+
+// 绑定网格单元格点击事件
+KeyboardInputManager.prototype.bindGridCellClicks = function () {
+  var self = this;
+  var gridCells = document.querySelectorAll(".grid-cell");
+
+  gridCells.forEach(function (cell) {
+    var clickCount = 0;
+    var clickTimer = null;
+
+    cell.addEventListener("click", function (event) {
+      event.preventDefault();
+
+      var x = parseInt(this.getAttribute("data-x"));
+      var y = parseInt(this.getAttribute("data-y"));
+
+      clickCount++;
+
+      if (clickCount === 1) {
+        // 第一次点击，设置延迟执行单击事件
+        clickTimer = setTimeout(function () {
+          // 确认只有一次点击，执行单击逻辑
+          if (clickCount === 1) {
+            self.emit("cellClick", {x: x, y: y});
+          }
+          // 重置计数器
+          clickCount = 0;
+        }, 400);
+      } else if (clickCount === 2) {
+        // 第二次点击，取消单击定时器并执行双击逻辑
+        if (clickTimer) {
+          clearTimeout(clickTimer);
+          clickTimer = null;
+        }
+
+        // 执行双击逻辑
+        self.emit("cellDoubleClick", {x: x, y: y});
+
+        // 重置计数器
+        clickCount = 0;
+      }
+    });
+
+    // 处理触摸事件
+    cell.addEventListener(self.eventTouchend, function (event) {
+      event.preventDefault();
+      var x = parseInt(this.getAttribute("data-x"));
+      var y = parseInt(this.getAttribute("data-y"));
+      self.emit("cellClick", {x: x, y: y});
+    });
+  });
 };
 
 // 导出KeyboardInputManager类

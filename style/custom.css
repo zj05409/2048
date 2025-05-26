@@ -1,3 +1,36 @@
+/* 禁用点击操作产生的瓦片动画 */
+.tile-no-animation {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  transition: none !important;
+}
+
+.tile-no-animation .tile-inner {
+  -webkit-animation: none !important;
+  -moz-animation: none !important;
+  animation: none !important;
+}
+
+/* 编辑输入框样式 */
+.tile-edit-input {
+  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+  border: 3px solid #8f7a66 !important;
+  background: #fff !important;
+  color: #776e65 !important;
+  text-align: center !important;
+  font-weight: bold !important;
+  outline: none !important;
+  border-radius: 6px !important;
+  z-index: 1000 !important;
+  position: absolute !important;
+  box-sizing: border-box !important;
+}
+
+.tile-edit-input:focus {
+  border-color: #f67c5f !important;
+  box-shadow: 0 0 10px rgba(246, 124, 95, 0.5) !important;
+}
+
 /* 游戏布局容器 */
 .game-layout-container {
   display: flex;

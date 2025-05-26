@@ -51,6 +51,15 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager.on("exportReplay", this.exportReplay.bind(this));
   this.inputManager.on("importReplay", this.importReplay.bind(this));
 
+  // 监听网格单元格点击事件
+  this.inputManager.on("cellClick", this.handleCellClick.bind(this));
+
+  // 监听网格单元格双击事件
+  this.inputManager.on(
+    "cellDoubleClick",
+    this.handleCellDoubleClick.bind(this)
+  );
+
   this.setup();
 }
 
@@ -204,7 +213,7 @@ GameManager.prototype.addRandomTile = function () {
 };
 
 // Sends the updated grid to the actuator
-GameManager.prototype.actuate = function () {
+GameManager.prototype.actuate = function (skipAnimation) {
   if (this.storageManager.getBestScore() < this.score) {
     this.storageManager.setBestScore(this.score);
   }
@@ -216,13 +225,17 @@ GameManager.prototype.actuate = function () {
     this.storageManager.setGameState(this.serialize());
   }
 
-  this.actuator.actuate(this.grid, {
-    score: this.score,
-    over: this.over,
-    won: this.won,
-    bestScore: this.storageManager.getBestScore(),
-    terminated: this.isGameTerminated(),
-  });
+  this.actuator.actuate(
+    this.grid,
+    {
+      score: this.score,
+      over: this.over,
+      won: this.won,
+      bestScore: this.storageManager.getBestScore(),
+      terminated: this.isGameTerminated(),
+    },
+    skipAnimation
+  );
 };
 
 // Represent the current game as an object
@@ -2118,6 +2131,111 @@ GameManager.prototype.exitReplay = function () {
 
   // 重启游戏
   this.restart();
+};
+
+// 处理网格单元格点击
+GameManager.prototype.handleCellClick = function (position) {
+  // 如果游戏结束或者正在回放模式，不处理点击
+  if (this.over || this.replayMode) {
+    return;
+  }
+
+  // 保存当前状态到历史记录（用于撤销功能）
+  this.saveToHistory();
+
+  var currentTile = this.grid.cellContent(position);
+
+  if (!currentTile) {
+    // 空白格，设置为2
+    var newTile = new Tile(position, 2);
+    newTile.noAnimation = true; // 标记为无动画
+    this.grid.insertTile(newTile);
+  } else if (currentTile.value === 2) {
+    // 数字为2的方格，变成4
+    currentTile.value = 4;
+    currentTile.noAnimation = true; // 标记为无动画
+  } else if (currentTile.value === 4) {
+    // 数字为4的方格，变成空白
+    this.grid.removeTile(currentTile);
+  }
+  // 其他数字不响应点击
+
+  // 为所有现有的瓦片添加无动画标记并清除动画属性（避免重新渲染时的闪烁）
+  this.grid.eachCell(function (x, y, tile) {
+    if (tile) {
+      tile.noAnimation = true;
+      // 清除动画相关属性，防止重新播放之前的移动动画
+      tile.previousPosition = null;
+      tile.mergedFrom = null;
+    }
+  });
+
+  // 更新界面（跳过动画）
+  this.actuate(true);
+
+  // 更新评分
+  this.evaluateCurrentBoard();
+};
+
+// 处理网格单元格双击 - 进入编辑模式
+GameManager.prototype.handleCellDoubleClick = function (position) {
+  // 如果游戏结束或者正在回放模式，不处理双击
+  if (this.over || this.replayMode) {
+    return;
+  }
+
+  // 调用HTML渲染器显示编辑输入框
+  if (this.actuator.showEditInput) {
+    this.actuator.showEditInput(position, this);
+  }
+};
+
+// 验证输入值是否为2的幂
+GameManager.prototype.isPowerOfTwo = function (value) {
+  // 必须是正整数且是2的幂
+  return value > 0 && (value & (value - 1)) === 0;
+};
+
+// 应用编辑值到指定位置
+GameManager.prototype.applyEditValue = function (position, value) {
+  // 保存当前状态到历史记录（用于撤销功能）
+  this.saveToHistory();
+
+  var currentTile = this.grid.cellContent(position);
+
+  if (value === 0 || value === "") {
+    // 空值，移除瓦片
+    if (currentTile) {
+      this.grid.removeTile(currentTile);
+    }
+  } else {
+    // 设置新值
+    if (currentTile) {
+      // 修改现有瓦片
+      currentTile.value = value;
+      currentTile.noAnimation = true;
+    } else {
+      // 创建新瓦片
+      var newTile = new Tile(position, value);
+      newTile.noAnimation = true;
+      this.grid.insertTile(newTile);
+    }
+  }
+
+  // 为所有现有的瓦片添加无动画标记并清除动画属性
+  this.grid.eachCell(function (x, y, tile) {
+    if (tile) {
+      tile.noAnimation = true;
+      tile.previousPosition = null;
+      tile.mergedFrom = null;
+    }
+  });
+
+  // 更新界面（跳过动画）
+  this.actuate(true);
+
+  // 更新评分
+  this.evaluateCurrentBoard();
 };
 
 // 导出GameManager类
