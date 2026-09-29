@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 
 export default defineConfig({
+  base: "./",
   build: {
     outDir: "dist",
     assetsInlineLimit: 10000000, // 提高内联限制，确保所有资源都被内联
@@ -133,8 +134,9 @@ export default defineConfig({
               const base64 = buffer.toString("base64");
 
               // 查找并替换HTML中的引用
+              const escaped = fileName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
               const regex = new RegExp(
-                `(href|src)="[^"]*?${fileName.split("-")[0]}[^"]*?"`,
+                `(href|src)="[^"]*?assets/${escaped}"`,
                 "g"
               );
               htmlContent = htmlContent.replace(
